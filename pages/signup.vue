@@ -54,10 +54,7 @@
 
 <script lang="ts">
 import { SIGNUP } from '~/queries/signup'
-import {
-  Credentials,
-  UnauthenticatedUserCredentialsState,
-} from '~/store/unauthenticatedUserCredentials'
+import { Credentials } from '~/store/unauthenticatedUserCredentials'
 import { CreateUserInput } from '~/__generated__/globalTypes'
 
 export default {
@@ -71,7 +68,7 @@ export default {
       return this.$accessor.unauthenticatedUserCredentials.creds
     },
     errors(this: Vue): object {
-      return this.$accessor.unauthenticatedUserCredentials.errors
+      return this.$accessor.unauthenticatedUserCredentials.signupErrors
     },
   },
   methods: {
@@ -87,9 +84,8 @@ export default {
     },
     async doSubmit(this: Vue): Promise<void> {
       this.$data.hasAttemptedSubmit = true
-      console.log('doSubmit') //eslint-disable-line
       const isValid: boolean = this.$accessor.unauthenticatedUserCredentials
-        .isValid
+        .isSignupValid
       const {
         password,
         email,

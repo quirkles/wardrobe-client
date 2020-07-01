@@ -1,6 +1,7 @@
+// tsconfig.json
 {
   "compilerOptions": {
-    "target": "esnext",
+    "target": "es2018",
     "module": "esnext",
     "moduleResolution": "node",
     "lib": [
@@ -13,7 +14,6 @@
     "sourceMap": true,
     "strict": true,
     "noEmit": true,
-    "experimentalDecorators": true,
     "baseUrl": ".",
     "paths": {
       "~/*": [
@@ -29,8 +29,6 @@
     ]
   },
   "exclude": [
-    "node_modules",
-    ".nuxt",
-    "dist"
+    "node_modules"
   ]
 }

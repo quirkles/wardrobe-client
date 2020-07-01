@@ -38,8 +38,7 @@ export const state = (): UnauthenticatedUserCredentialsState => ({
 })
 
 export const getters = getterTree(state, {
-  isValid: (state: UnauthenticatedUserCredentialsState): boolean => {
-    console.log('isvalid') //eslint-disable-line
+  isSignupValid: (state: UnauthenticatedUserCredentialsState): boolean => {
     const passwordsMatch = state.password === state.passwordConfirm
     const emailTaken = state.knownTakenEmails.includes(state.email)
     if (!passwordsMatch || emailTaken) {
@@ -47,7 +46,10 @@ export const getters = getterTree(state, {
     }
     return true
   },
-  errors: (
+  isLoginValid: (state: UnauthenticatedUserCredentialsState): boolean => {
+    return !!(state.email.length && state.password.length)
+  },
+  signupErrors: (
     state: UnauthenticatedUserCredentialsState
   ): { [field: string]: string[] } => {
     return {
@@ -56,6 +58,26 @@ export const getters = getterTree(state, {
           ? 'Email address already taken'
           : null,
       ].filter(stripNulls),
+      password: [
+        mustMatch(
+          state.password,
+          state.passwordConfirm,
+          'Password and confirm password do not match'
+        ),
+      ].filter(stripNulls),
+      passwordConfirm: [
+        mustMatch(
+          state.password,
+          state.passwordConfirm,
+          'Password and confirm password do not match'
+        ),
+      ].filter(stripNulls),
+    }
+  },
+  loginErrors: (
+    state: UnauthenticatedUserCredentialsState
+  ): { [field: string]: string[] } => {
+    return {
       password: [
         mustMatch(
           state.password,

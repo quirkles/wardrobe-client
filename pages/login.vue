@@ -10,7 +10,7 @@
           </header>
           <div class="card-content">
             <div class="content">
-              <b-field label="Email">
+              <b-field label="Email" :message="errors.email">
                 <b-input
                   v-model="credentials.email"
                   type="email"
@@ -44,33 +44,43 @@
 </template>
 
 <script lang="ts">
-import { UnauthenticatedUserCredentialsState } from '~/store/unauthenticatedUserCredentials'
 import { CreateUserInput } from '~/__generated__/globalTypes'
 import { LOGIN } from '~/queries/login'
+import { Credentials } from '~/store/unauthenticatedUserCredentials'
 
 export default {
+  data() {
+    return {
+      isShowingNotFoundError: false,
+      hasAttemptedSubmit: false,
+    }
+  },
   computed: {
-    credentials(this: Vue)  {
+    credentials(): Credentials {
       return this.$accessor.unauthenticatedUserCredentials.creds
     },
-    errors(this: Vue): object {
-      return this.$accessor.unauthenticatedUserCredentials.errors
+    errors(): object {
+      return this.$accessor.unauthenticatedUserCredentials.loginErrors
     },
   },
   methods: {
+    flashNotFoundMessage(this: Vue): void {
+      this.$data.isShowingNotFoundError = true
+    },
     handleFieldChange(
       this: Vue,
       field: 'email' | 'password' | 'passwordConfirm',
       value: string
-    ) {
+    ): void {
       this.$accessor.unauthenticatedUserCredentials.updateField({
         field,
         value,
       })
     },
-    async doSubmit(this: Vue): Promise<void> {
+    async doSubmit(): Promise<void> {
+      this.$data.hasAttemptedSubmit = true
       const isValid: boolean = this.$accessor.unauthenticatedUserCredentials
-        .isValid
+        .isLoginValid
       const {
         password,
         email,
@@ -83,12 +93,12 @@ export default {
             email,
           },
         })
-        const { token, reason } = response?.data?.loginUser || {}
+        const { token, __typename } = response?.data?.loginUser || {}
         if (token) {
           await this.$apolloHelpers.onLogin(token)
-          this.$router.push('home')
-        } else {
-          console.log(reason) //eslint-disable-line
+          await this.$router.push('home')
+        } else if (__typename === 'UserNotFoundError ') {
+          this.flashNotFoundMessage()
         }
       }
     },
