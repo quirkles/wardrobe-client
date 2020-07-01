@@ -53,27 +53,27 @@
 </template>
 
 <script lang="ts">
+import Vue from 'vue'
 import { SIGNUP } from '~/queries/signup'
 import { Credentials } from '~/store/unauthenticatedUserCredentials'
 import { CreateUserInput } from '~/__generated__/globalTypes'
 
-export default {
+export default Vue.extend({
   data() {
     return {
       hasAttemptedSubmit: false,
     }
   },
   computed: {
-    credentials(this: Vue): Credentials {
+    credentials(): Credentials {
       return this.$accessor.unauthenticatedUserCredentials.creds
     },
-    errors(this: Vue): object {
+    errors(): object {
       return this.$accessor.unauthenticatedUserCredentials.signupErrors
     },
   },
   methods: {
     handleFieldChange(
-      this: Vue,
       field: 'email' | 'password' | 'passwordConfirm',
       value: string
     ) {
@@ -82,7 +82,7 @@ export default {
         value,
       })
     },
-    async doSubmit(this: Vue): Promise<void> {
+    async doSubmit(): Promise<void> {
       this.$data.hasAttemptedSubmit = true
       const isValid: boolean = this.$accessor.unauthenticatedUserCredentials
         .isSignupValid
@@ -112,7 +112,7 @@ export default {
       }
     },
   },
-}
+})
 </script>
 <style lang="scss">
 #signupPanel {

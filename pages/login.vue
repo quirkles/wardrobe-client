@@ -10,6 +10,12 @@
           </header>
           <div class="card-content">
             <div class="content">
+              <div
+                v-if="isShowingNotFoundError"
+                class="py-2 has-text-indian-red"
+              >
+                No user found with those credentials
+              </div>
               <b-field label="Email" :message="errors.email">
                 <b-input
                   v-model="credentials.email"
@@ -44,11 +50,12 @@
 </template>
 
 <script lang="ts">
+import Vue from 'vue'
 import { CreateUserInput } from '~/__generated__/globalTypes'
 import { LOGIN } from '~/queries/login'
 import { Credentials } from '~/store/unauthenticatedUserCredentials'
 
-export default {
+export default Vue.extend({
   data() {
     return {
       isShowingNotFoundError: false,
@@ -65,7 +72,12 @@ export default {
   },
   methods: {
     flashNotFoundMessage(this: Vue): void {
+      console.log('flashing') //eslint-disable-line
       this.$data.isShowingNotFoundError = true
+      setTimeout(() => {
+      console.log('end flashing') //eslint-disable-line
+        this.$data.isShowingNotFoundError = false
+      }, 2000)
     },
     handleFieldChange(
       this: Vue,
@@ -97,13 +109,14 @@ export default {
         if (token) {
           await this.$apolloHelpers.onLogin(token)
           await this.$router.push('home')
-        } else if (__typename === 'UserNotFoundError ') {
+        } else if (__typename === 'UserNotFoundError') {
           this.flashNotFoundMessage()
         }
+        console.log(__typename) //eslint-disable-line
       }
     },
   },
-}
+})
 </script>
 
 <style lang="scss">
