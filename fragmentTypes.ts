@@ -95,6 +95,8 @@ export type GarmentSubCategory = {
   garments: Array<Garment>;
 };
 
+export type GetUserByIdResult = User | UserNotFoundError;
+
 export type InvalidBrandError = {
   __typename?: 'InvalidBrandError';
   responseType: Scalars['String'];
@@ -143,7 +145,12 @@ export type MutationLoginUserArgs = {
 
 export type Query = {
   __typename?: 'Query';
-  hello: Scalars['String'];
+  getUserById: GetUserByIdResult;
+};
+
+
+export type QueryGetUserByIdArgs = {
+  userId: Scalars['String'];
 };
 
 export type UnauthorizedError = {
@@ -191,6 +198,18 @@ export type UserNotFoundError = {
       const result: IntrospectionResultData = {
   "__schema": {
     "types": [
+      {
+        "kind": "UNION",
+        "name": "GetUserByIdResult",
+        "possibleTypes": [
+          {
+            "name": "User"
+          },
+          {
+            "name": "UserNotFoundError"
+          }
+        ]
+      },
       {
         "kind": "UNION",
         "name": "CreateGarmentResult",

@@ -9,10 +9,16 @@ import { CreateUserInput } from "./../../__generated__/globalTypes";
 // GraphQL mutation operation: Signup
 // ====================================================
 
-export interface Signup_createUser_User {
+export interface Signup_createUser_UserAndToken_user {
   __typename: "User";
   id: string;
   email: string;
+}
+
+export interface Signup_createUser_UserAndToken {
+  __typename: "UserAndToken";
+  user: Signup_createUser_UserAndToken_user;
+  token: string;
 }
 
 export interface Signup_createUser_DuplicateUserError {
@@ -26,12 +32,12 @@ export interface Signup_createUser_FallBackServerError {
   message: string;
 }
 
-export type Signup_createUser = Signup_createUser_User | Signup_createUser_DuplicateUserError | Signup_createUser_FallBackServerError;
+export type Signup_createUser = Signup_createUser_UserAndToken | Signup_createUser_DuplicateUserError | Signup_createUser_FallBackServerError;
 
 export interface Signup {
   createUser: Signup_createUser;
 }
 
 export interface SignupVariables {
-  createUserInput?: CreateUserInput | null;
+  createUserInput: CreateUserInput;
 }
