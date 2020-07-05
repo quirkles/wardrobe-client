@@ -36,16 +36,18 @@ export default Vue.extend({
       ctx.redirect(`/login`)
     } else {
       try {
-        const { sub: userId } = decode(token) as DecodedJwtToken
+        const { sub: userId, email } = decode(token) as DecodedJwtToken
+        ctx.app.$accessor.sessionUser.setSessionUserData({
+          id: String(userId),
+          email,
+        })
         const response = await ctx?.app?.apolloProvider?.defaultClient?.query({
           query: GET_GARMENTS_FOR_USER,
           variables: {
             userId: String(userId),
           },
         })
-        const { data, errors } = response || {}
-        if (errors && errors.length) {
-        }
+        const { data } = response || {}
         return { getUserByIdResponse: data || {} }
       } catch (e) {
         return {}
@@ -59,8 +61,6 @@ export default Vue.extend({
   },
   computed: {
     userId() {
-      console.log(this.$accessor.sessionUser) //eslint-disable-line
-      console.log(this.$accessor.unauthenticatedUserCredentials) //eslint-disable-line
       return this.$accessor.sessionUser.id
     },
   },

@@ -104,9 +104,6 @@ export const getters = getterTree(state, {
 })
 
 export const mutations = mutationTree(state, {
-  initialiseStore() {
-    console.log('initialised unauthenticatedUserCredentials store')
-  },
   updateField(
     state: UnauthenticatedUserCredentialsState,
     { field, value }: UpdateFieldPayload
