@@ -32,8 +32,8 @@ export const state = (): UnauthenticatedUserCredentialsState => ({
   firstName: 'alex',
   lastName: 'quirk',
   email: 'email1@mail.com',
-  password: 'dddd',
-  passwordConfirm: 'dddd',
+  password: '',
+  passwordConfirm: '',
   knownTakenEmails: [],
 })
 

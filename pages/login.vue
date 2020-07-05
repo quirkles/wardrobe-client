@@ -54,6 +54,7 @@ import Vue from 'vue'
 import { CreateUserInput } from '~/__generated__/globalTypes'
 import { LOGIN } from '~/queries/login'
 import { Credentials } from '~/store/unauthenticatedUserCredentials'
+import { User } from '~/fragmentTypes'
 
 export default Vue.extend({
   data() {
@@ -72,10 +73,8 @@ export default Vue.extend({
   },
   methods: {
     flashNotFoundMessage(this: Vue): void {
-      console.log('flashing') //eslint-disable-line
       this.$data.isShowingNotFoundError = true
       setTimeout(() => {
-      console.log('end flashing') //eslint-disable-line
         this.$data.isShowingNotFoundError = false
       }, 2000)
     },
@@ -105,14 +104,19 @@ export default Vue.extend({
             email,
           },
         })
-        const { token, __typename } = response?.data?.loginUser || {}
+        const resp = response?.data?.loginUser || {}
+        const { token, __typename, user } = resp
+        const { id, email: userEmail } = user as User
         if (token) {
+          this.$accessor.sessionUser.setSessionUserData({
+            id,
+            email: userEmail,
+          })
           await this.$apolloHelpers.onLogin(token)
           await this.$router.push('home')
         } else if (__typename === 'UserNotFoundError') {
           this.flashNotFoundMessage()
         }
-        console.log(__typename) //eslint-disable-line
       }
     },
   },

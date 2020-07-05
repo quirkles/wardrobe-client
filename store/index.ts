@@ -6,6 +6,7 @@ import {
 } from 'typed-vuex'
 
 import * as unauthenticatedUserCredentials from '~/store/unauthenticatedUserCredentials'
+import * as sessionUser from '~/store/sessionUser'
 
 const state = () => {}
 
@@ -26,6 +27,7 @@ const storePattern = {
   actions,
   modules: {
     unauthenticatedUserCredentials,
+    sessionUser,
   },
 }
 

@@ -1,7 +1,21 @@
 <template>
-  <div class="columns is-centered">
-    <div class="column is-full">
-      <h1>Home</h1>
+  <div id="homepage" class="container pt-4">
+    <h1 class="is-size-1">My Wardrobe</h1>
+    <h1 class="is-size-1">User id: {{ userId }}</h1>
+    <div class="columns mt-4">
+      <div
+        id="add-garment-button"
+        class="column is-one-quarter-desktop is-full-mobile"
+      >
+        <nuxt-link to="/garment/new">
+          <div class="is-size-2 is-bold">
+            +
+          </div>
+          <div>
+            Add Garment
+          </div>
+        </nuxt-link>
+      </div>
     </div>
   </div>
 </template>
@@ -43,7 +57,22 @@ export default Vue.extend({
       getUserByIdResponse: {} as GetGarmentsForUser,
     }
   },
+  computed: {
+    userId() {
+      console.log(this.$accessor.sessionUser) //eslint-disable-line
+      console.log(this.$accessor.unauthenticatedUserCredentials) //eslint-disable-line
+      return this.$accessor.sessionUser.id
+    },
+  },
 })
 </script>
 
-<style></style>
+<style lang="scss">
+#homepage {
+  #add-garment-button {
+    cursor: pointer;
+    border: 2px dashed $black;
+    text-align: center;
+  }
+}
+</style>
