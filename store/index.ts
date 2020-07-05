@@ -7,6 +7,7 @@ import {
 
 import * as unauthenticatedUserCredentials from '~/store/unauthenticatedUserCredentials'
 import * as sessionUser from '~/store/sessionUser'
+import * as newGarmentData from '~/store/newGarmentData'
 
 const state = () => {}
 
@@ -28,6 +29,7 @@ const storePattern = {
   modules: {
     unauthenticatedUserCredentials,
     sessionUser,
+    newGarmentData,
   },
 }
 

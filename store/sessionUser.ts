@@ -26,7 +26,6 @@ export const mutations = mutationTree(state, {
         Vue.set(state, prop, newData[prop])
       }
     }
-    console.log(state) //eslint-disable-line
   },
 })
 
