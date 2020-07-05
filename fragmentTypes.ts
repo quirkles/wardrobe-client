@@ -146,6 +146,8 @@ export type MutationLoginUserArgs = {
 export type Query = {
   __typename?: 'Query';
   getUserById: GetUserByIdResult;
+  getBrands: Array<Brand>;
+  getCategories: Array<GarmentCategory>;
 };
 
 

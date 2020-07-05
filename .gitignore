@@ -88,3 +88,6 @@ sw.*
 
 # Vim swap files
 *.swp
+
+__generated__
+queries/__generated__
