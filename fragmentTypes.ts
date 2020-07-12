@@ -155,6 +155,11 @@ export type QueryGetUserByIdArgs = {
   userId: Scalars['String'];
 };
 
+
+export type QueryGetBrandsArgs = {
+  query: Scalars['String'];
+};
+
 export type UnauthorizedError = {
   __typename?: 'UnauthorizedError';
   responseType: Scalars['String'];
