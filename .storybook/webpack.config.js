@@ -1,6 +1,4 @@
 const path = require('path')
-console.log('########') //eslint-disable-line
-console.log(path.dirname(path.resolve(__dirname))) //eslint-disable-line
 
 module.exports = {
   module: {
