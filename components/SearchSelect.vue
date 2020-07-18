@@ -6,10 +6,11 @@
 
 <script lang="ts">
 import Vue from 'vue'
-// interface DataType {
-//   query: null | string
-//   results: any[]
-// }
+import { SearchResult } from '~/components/searchSelect/types'
+interface DataType {
+  query: null | string
+  results: SearchResult[]
+}
 export default Vue.extend({
   props: {
     getResults: {
@@ -17,7 +18,7 @@ export default Vue.extend({
       required: true,
     },
   },
-  data() {
+  data(): DataType {
     return {
       query: null,
       results: [],
