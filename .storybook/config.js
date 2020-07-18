@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Buefy from 'buefy'
 import { configure } from '@storybook/vue'
-import SearchSelect from '../components/SearchSelect.vue'
+import SearchSelect from '../components/searchSelect/SearchSelect.vue'
 
 import "../assets/styles/main.scss"
 
