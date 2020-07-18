@@ -1,34 +1,53 @@
-const path = require('path')
+const path = require('path');
 
-module.exports = {
-  module: {
-    rules: [
-      {
-        test: /\.s?css$/,
-        loaders: ['style-loader', 'css-loader', 'sass-loader'],
-        include: path.resolve(__dirname, '../'),
-        resolve: {
-          alias: {
-            // figure out which one of these is needed
-            '~assets': `${path.dirname(path.resolve(__dirname))}/assets`,
-            'assets': `${path.dirname(path.resolve(__dirname))}/assets`
-          }
-        }
-      },
-      {
-        test: /\.(png|jpe?g|gif)$/i,
-        use: [
-          {
-            loader: 'file-loader'
-          }
-        ]
-      }
-    ]
-  },
-  resolve: {
-    alias: {
-      '@': path.dirname(path.resolve(__dirname)),
-      '~': path.dirname(path.resolve(__dirname))
-    }
+module.exports = async ({ config }) => {
+
+  function resolve(dir) {
+    return path.join(__dirname, '..', dir);
   }
-}
+
+  /** removes existing scss rule */
+  config.module.rules = config.module.rules.filter(rule =>
+    !rule.test.test('.scss')
+  )
+  config.module.rules.push({
+    test: /\.scss$/,
+    use: [
+      'vue-style-loader',
+      'css-loader', {
+        loader: 'sass-loader',
+      },
+    ],
+    resolve: {
+      alias: {
+        // figure out which one of these is needed
+        '~assets': `${path.dirname(path.resolve(__dirname))}/assets`,
+        'assets': `${path.dirname(path.resolve(__dirname))}/assets`
+      }
+    }
+  })
+
+  config.module.rules.push({
+    test: /\.ts$/,
+    exclude: /node_modules/,
+    use: [
+      {
+        loader: 'ts-loader',
+        options: {
+          appendTsSuffixTo: [/\.vue$/],
+          transpileOnly: true
+        },
+      }
+    ],
+  });
+
+  config.resolve = {
+    extensions: ['.js', '.vue', '.json'],
+    alias: {
+      vue$: 'vue/dist/vue.esm.js',
+      '@': resolve('src'),
+    },
+  };
+
+  return config;
+};

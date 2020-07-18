@@ -1,8 +1,11 @@
 import Vue from 'vue';
+import Buefy from 'buefy'
 import { configure } from '@storybook/vue'
 import SearchSelect from '../components/SearchSelect'
 
 import "../assets/styles/main.scss"
+
+Vue.use(Buefy)
 
 Vue.component('SearchSelect', SearchSelect)
 
