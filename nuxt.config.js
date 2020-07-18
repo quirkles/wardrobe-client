@@ -50,15 +50,11 @@ export default {
   /*
    ** Nuxt.js dev-modules
    */
-  buildModules: [
-    '@nuxt/typescript-build',
-    'nuxt-typed-vuex',
-    '@nuxtjs/style-resources',
-  ],
+  buildModules: ['@nuxt/typescript-build', 'nuxt-typed-vuex'],
   /*
    ** Nuxt.js modules
    */
-  modules: ['@nuxtjs/apollo'],
+  modules: ['@nuxtjs/apollo', '@nuxtjs/style-resources'],
   /*
    ** Build configuration
    ** See https://nuxtjs.org/api/configuration-build/

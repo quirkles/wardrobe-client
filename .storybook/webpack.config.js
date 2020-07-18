@@ -1,7 +1,6 @@
 const path = require('path');
 
 module.exports = async ({ config }) => {
-
   function resolve(dir) {
     return path.join(__dirname, '..', dir);
   }
