@@ -7,6 +7,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import { SearchResult } from '~/components/searchSelect/types'
+import { debounce } from '~/utils/debounce'
 interface DataType {
   query: null | string
   results: SearchResult[]
@@ -25,9 +26,9 @@ export default Vue.extend({
     }
   },
   methods: {
-    handleChange: function setResults(this: Vue, value: string) {
-      this.$data.results = this.$props.getResults(value)
-    },
+    handleChange: debounce(async function setResults(this: Vue, value: string) {
+      this.$data.results = await this.$props.getResults(value)
+    }, 500),
   },
 })
 </script>

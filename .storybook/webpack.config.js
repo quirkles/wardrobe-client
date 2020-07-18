@@ -42,10 +42,11 @@ module.exports = async ({ config }) => {
   });
 
   config.resolve = {
-    extensions: ['.js', '.vue', '.json'],
+    extensions: ['.js', '.ts', '.vue', '.json'],
     alias: {
       vue$: 'vue/dist/vue.esm.js',
-      '@': resolve('src'),
+      '@': path.dirname(path.resolve(__dirname)),
+      '~': path.dirname(path.resolve(__dirname))
     },
   };
 
