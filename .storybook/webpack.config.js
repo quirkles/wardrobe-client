@@ -11,7 +11,7 @@ module.exports = async ({ config }) => {
     !rule.test.test('.scss')
   )
   config.module.rules.push({
-    test: /\.scss$/,
+    test: /\.s[ca]ss$/,
     use: [
       'vue-style-loader',
       'css-loader', {
