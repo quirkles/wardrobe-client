@@ -16,6 +16,9 @@
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
   },
+  "resolutions": {
+    "graphql": "^0.13.2"
+  },
   "dependencies": {
     "@nuxt/typescript-runtime": "^0.4.10",
     "@nuxtjs/apollo": "^4.0.1-rc.1",

@@ -19,15 +19,11 @@
         ></b-input>
       </b-field>
       <b-field label="Brand">
-        <b-select
-          v-model="newGarmentDataSettableStringFields.brandId"
-          placeholder="Select a brand"
-          @input="handleFieldChange('brandId', $event)"
-        >
-          <option v-for="brand in brands" :key="brand.id" :value="brand.id">
-            {{ brand.name }}
-          </option>
-        </b-select>
+        <search-select
+          :get-results="findBrands"
+          placeholder="Search For Brand"
+          @select="onBrandSelect"
+        ></search-select>
       </b-field>
       <b-field label="Category">
         <b-select
@@ -72,6 +68,9 @@ import { DecodedJwtToken } from '~/types/DecodedJwtToken'
 import { GET_GARMENT_METADATA } from '~/queries/getGarmentMetaData'
 import { Brand, GarmentCategory, GarmentSubCategory } from '~/fragmentTypes'
 import { NewGarmentDataState } from '~/store/newGarmentData'
+import { SearchResult } from '~/components/searchSelect/types'
+import { LOGIN } from '~/queries/login'
+import { SEARCH_BRANDS } from '~/queries/findBrands'
 
 export default Vue.extend({
   async asyncData(
@@ -136,6 +135,23 @@ export default Vue.extend({
     },
   },
   methods: {
+    onBrandSelect(selectedBrand: SearchResult): void {
+      console.log(selectedBrand) //eslint-disable-line
+    },
+    async findBrands(searchTerm: string): Promise<SearchResult[]> {
+      const resp = await this.$apollo.query({
+        query: SEARCH_BRANDS,
+        variables: {
+          searchTerm,
+        },
+      })
+      return resp.data.brands
+        .map((brand: Brand) => ({
+          text: brand.name,
+          value: brand.id,
+        }))
+        .slice(0, 12)
+    },
     handleFieldChange(
       field: keyof Omit<NewGarmentDataState, 'imageUrls'>,
       value: string

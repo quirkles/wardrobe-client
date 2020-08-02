@@ -105,7 +105,7 @@ export default Vue.extend({
           },
         })
         const resp = response?.data?.loginUser || {}
-        const { token, __typename, user } = resp
+        const { token, __typename, user = {} } = resp
         const { id, email: userEmail } = user as User
         if (token) {
           this.$accessor.sessionUser.setSessionUserData({

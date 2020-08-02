@@ -20,15 +20,16 @@ export const withText = () => {
         console.log(value) //eslint-disable-line
       },
       getResults(value: string) {
-        console.log(value) //eslint-disable-line
-        console.log(names) //eslint-disable-line
         const regex = new RegExp(value)
-        return names
-          .filter((value) => regex.test(value.name))
-          .map((value) => ({
-            text: value.name,
-            value: value.id,
-          }))
+        return Promise.resolve(
+          names
+            .filter((value) => regex.test(value.name))
+            .map((value) => ({
+              text: value.name,
+              value: value.id,
+            }))
+            .slice(0, 10)
+        )
       },
     },
     template:

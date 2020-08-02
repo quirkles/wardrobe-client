@@ -51,7 +51,7 @@ export default Vue.extend({
   },
   data(): DataType {
     return {
-      isSearching: true,
+      isSearching: false,
       query: null,
       results: [],
       selectedResult: null,
@@ -59,7 +59,7 @@ export default Vue.extend({
   },
   computed: {
     displayText(): string {
-      return this.selectedResult?.text || 'Click to search'
+      return this.selectedResult?.text || this.$props.placeholder
     },
   },
   methods: {
@@ -70,7 +70,6 @@ export default Vue.extend({
       }
     },
     handleSelect(result: SearchResult): void {
-      console.log('click') //eslint-disable-line
       this.selectedResult = result
       this.isSearching = false
       this.$emit('select', result)
@@ -86,6 +85,7 @@ export default Vue.extend({
 @import 'assets/styles/variables';
 @import 'assets/styles/mixins';
 .search-select {
+  display: inline-block;
   .overlay {
     position: fixed;
     width: 100vw;
@@ -109,6 +109,8 @@ export default Vue.extend({
       border-bottom: 1px solid;
       border-left: 1px solid;
       border-right: 1px solid;
+      list-style: none;
+      margin: 0;
       li {
         cursor: pointer;
         padding: $control-padding-vertical $control-padding-horizontal;
