@@ -56,6 +56,9 @@
           </option>
         </b-select>
       </b-field>
+      <button class="button is-primary" @click="doSaveGarment">
+        Save Garment
+      </button>
     </div>
   </div>
 </template>
@@ -66,16 +69,15 @@ import { decode } from 'jsonwebtoken'
 import { clientGetCookie, serverGetCookie } from '~/utils/cookie'
 import { DecodedJwtToken } from '~/types/DecodedJwtToken'
 import { GET_GARMENT_METADATA } from '~/queries/getGarmentMetaData'
-import { Brand, GarmentCategory, GarmentSubCategory } from '~/fragmentTypes'
+import { GarmentCategory, GarmentSubCategory } from '~/fragmentTypes'
 import { NewGarmentDataState } from '~/store/newGarmentData'
 import { SearchResult } from '~/components/searchSelect/types'
-import { LOGIN } from '~/queries/login'
 import { SEARCH_BRANDS } from '~/queries/findBrands'
+import { GetGarmentMetaData_brands as GetGarmentMetaDataBrand } from '~/queries/__generated__/GetGarmentMetaData'
+import { CREATE_GARMENT } from '~/queries/createGarment'
 
 export default Vue.extend({
-  async asyncData(
-    ctx
-  ): Promise<void | { brands: Brand[]; categories: GarmentCategory[] }> {
+  async asyncData(ctx): Promise<void | { categories: GarmentCategory[] }> {
     const token = process.server ? serverGetCookie(ctx) : clientGetCookie()
     if (!token) {
       return ctx.redirect(`/login`)
@@ -95,11 +97,10 @@ export default Vue.extend({
             userId: String(userId),
           },
         })
-        const { brands, categories } = response?.data || {}
-        return { brands, categories }
+        const { categories } = response?.data || {}
+        return { categories }
       } catch (e) {
         return {
-          brands: [],
           categories: [],
         }
       }
@@ -107,13 +108,15 @@ export default Vue.extend({
   },
   data() {
     return {
-      brands: [] as Brand[],
       categories: [] as GarmentCategory[],
     }
   },
   computed: {
     isSubcategoryDropdownDisabled(): boolean {
       return !this.newGarmentDataSettableStringFields.categoryId
+    },
+    canSubmit(): boolean {
+      return this.$accessor.newGarmentData.isGarmentDataValid
     },
     newGarmentDataSettableStringFields(): Omit<
       NewGarmentDataState,
@@ -135,8 +138,19 @@ export default Vue.extend({
     },
   },
   methods: {
+    async doSaveGarment() {
+      if (this.canSubmit) {
+        const resp = await this.$apollo.mutate({
+          mutation: CREATE_GARMENT,
+          variables: {
+            input: this.$accessor.newGarmentData.createGarmentPayload,
+          },
+        })
+        console.log(resp) //eslint-disable-line
+      }
+    },
     onBrandSelect(selectedBrand: SearchResult): void {
-      console.log(selectedBrand) //eslint-disable-line
+      this.$accessor.newGarmentData.setBrandId(selectedBrand.value)
     },
     async findBrands(searchTerm: string): Promise<SearchResult[]> {
       const resp = await this.$apollo.query({
@@ -146,10 +160,12 @@ export default Vue.extend({
         },
       })
       return resp.data.brands
-        .map((brand: Brand) => ({
-          text: brand.name,
-          value: brand.id,
-        }))
+        .map(
+          (brand: GetGarmentMetaDataBrand): SearchResult => ({
+            text: brand.name,
+            value: brand.id,
+          })
+        )
         .slice(0, 12)
     },
     handleFieldChange(

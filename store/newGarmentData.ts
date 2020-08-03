@@ -1,5 +1,6 @@
 import { actionTree, getterTree, mutationTree } from 'nuxt-typed-vuex'
 import Vue from 'vue'
+import { CreateGarmentInput } from '~/fragmentTypes'
 
 export interface NewGarmentDataState {
   title: string | null
@@ -27,6 +28,15 @@ const propIsValidKey = (
 }
 
 export const getters = getterTree(state, {
+  createGarmentPayload(state: NewGarmentDataState): CreateGarmentInput {
+    return {
+      title: state.title || '',
+      description: state.description || '',
+      brandId: state.brandId || '',
+      subCategoryId: state.subCategoryId || '',
+      ownerId: state.ownerId || '',
+    }
+  },
   settableStringFields(
     state: NewGarmentDataState
   ): Omit<NewGarmentDataState, 'imageUrls' | 'ownerId'> {
@@ -37,6 +47,16 @@ export const getters = getterTree(state, {
       categoryId: state.categoryId,
       subCategoryId: state.subCategoryId,
     }
+  },
+  isGarmentDataValid(state): boolean {
+    return Boolean(
+      state.title &&
+        state.description &&
+        state.brandId &&
+        state.categoryId &&
+        state.subCategoryId &&
+        state.brandId
+    )
   },
 })
 
@@ -50,6 +70,9 @@ export const mutations = mutationTree(state, {
         Vue.set(state, prop, newData[prop])
       }
     }
+  },
+  setBrandId(state: NewGarmentDataState, brandId: string) {
+    Vue.set(state, 'brandId', brandId)
   },
   addImageUrl(state: NewGarmentDataState, urlToAdd: string) {
     Vue.set(state.imageUrls, state.imageUrls.length, urlToAdd)
