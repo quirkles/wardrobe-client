@@ -65,44 +65,33 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { decode } from 'jsonwebtoken'
-import { clientGetCookie, serverGetCookie } from '~/utils/cookie'
-import { DecodedJwtToken } from '~/types/DecodedJwtToken'
 import { GET_GARMENT_METADATA } from '~/queries/getGarmentMetaData'
 import { GarmentCategory, GarmentSubCategory } from '~/fragmentTypes'
 import { NewGarmentDataState } from '~/store/newGarmentData'
-import { SearchResult } from '~/components/searchSelect/types'
+import { SearchResult } from '~/components/searchSelect/searchSelectTypes'
 import { SEARCH_BRANDS } from '~/queries/findBrands'
 import { GetGarmentMetaData_brands as GetGarmentMetaDataBrand } from '~/queries/__generated__/GetGarmentMetaData'
 import { CREATE_GARMENT } from '~/queries/createGarment'
 
 export default Vue.extend({
+  middleware: 'loggedIn',
   async asyncData(ctx): Promise<void | { categories: GarmentCategory[] }> {
-    const token = process.server ? serverGetCookie(ctx) : clientGetCookie()
-    if (!token) {
-      return ctx.redirect(`/login`)
-    } else {
-      try {
-        const { sub: userId, email } = decode(token) as DecodedJwtToken
-        ctx.app.$accessor.sessionUser.setSessionUserData({
-          id: String(userId),
-          email,
-        })
-        ctx.app.$accessor.newGarmentData.updateStringField({
-          ownerId: String(userId),
-        })
-        const response = await ctx?.app?.apolloProvider?.defaultClient?.query({
-          query: GET_GARMENT_METADATA,
-          variables: {
-            userId: String(userId),
-          },
-        })
-        const { categories } = response?.data || {}
-        return { categories }
-      } catch (e) {
-        return {
-          categories: [],
-        }
+    try {
+      const userId = ctx.app.$accessor.sessionUser.id
+      ctx.app.$accessor.newGarmentData.updateStringField({
+        ownerId: String(userId),
+      })
+      const response = await ctx?.app?.apolloProvider?.defaultClient?.query({
+        query: GET_GARMENT_METADATA,
+        variables: {
+          userId: String(userId),
+        },
+      })
+      const { categories } = response?.data || {}
+      return { categories }
+    } catch (e) {
+      return {
+        categories: [],
       }
     }
   },

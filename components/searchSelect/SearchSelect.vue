@@ -30,7 +30,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { SearchResult } from '~/components/searchSelect/types'
+import { SearchResult } from '~/components/searchSelect/searchSelectTypes'
 import { debounce } from '~/utils/debounce'
 interface DataType {
   isSearching: boolean

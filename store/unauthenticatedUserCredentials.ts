@@ -29,9 +29,9 @@ interface UpdateFieldPayload {
 }
 
 export const state = (): UnauthenticatedUserCredentialsState => ({
-  firstName: 'alex',
-  lastName: 'quirk',
-  email: 'email1@mail.com',
+  firstName: '',
+  lastName: '',
+  email: '',
   password: '',
   passwordConfirm: '',
   knownTakenEmails: [],

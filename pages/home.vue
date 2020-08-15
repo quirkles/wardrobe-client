@@ -22,36 +22,23 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { decode } from 'jsonwebtoken'
-
-import { clientGetCookie, serverGetCookie } from '~/utils/cookie'
 import { GET_GARMENTS_FOR_USER } from '~/queries/getGarmentsForUser'
-import { DecodedJwtToken } from '~/types/DecodedJwtToken'
 import { GetGarmentsForUser } from '~/queries/__generated__/GetGarmentsForUser'
 
 export default Vue.extend({
+  middleware: 'loggedIn',
   async asyncData(ctx): Promise<object | void> {
-    const token = process.server ? serverGetCookie(ctx) : clientGetCookie()
-    if (!token) {
-      ctx.redirect(`/login`)
-    } else {
-      try {
-        const { sub: userId, email } = decode(token) as DecodedJwtToken
-        ctx.app.$accessor.sessionUser.setSessionUserData({
-          id: String(userId),
-          email,
-        })
-        const response = await ctx?.app?.apolloProvider?.defaultClient?.query({
-          query: GET_GARMENTS_FOR_USER,
-          variables: {
-            userId: String(userId),
-          },
-        })
-        const { data } = response || {}
-        return { getUserByIdResponse: data || {} }
-      } catch (e) {
-        return {}
-      }
+    try {
+      const response = await ctx?.app?.apolloProvider?.defaultClient?.query({
+        query: GET_GARMENTS_FOR_USER,
+        variables: {
+          userId: String(ctx.app.$accessor.sessionUser.id),
+        },
+      })
+      const { data } = response || {}
+      return { getUserByIdResponse: data || {} }
+    } catch (e) {
+      return {}
     }
   },
   data() {

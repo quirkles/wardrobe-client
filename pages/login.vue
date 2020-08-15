@@ -113,7 +113,8 @@ export default Vue.extend({
             email: userEmail,
           })
           await this.$apolloHelpers.onLogin(token)
-          await this.$router.push('home')
+          const { redirect = 'home' } = this.$route?.query
+          await this.$router.push(redirect as string)
         } else if (__typename === 'UserNotFoundError') {
           this.flashNotFoundMessage()
         }

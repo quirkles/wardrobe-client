@@ -4,7 +4,7 @@ import '!style-loader!css-loader!sass-loader!../assets/styles/variables.scss';
 import '!style-loader!css-loader!sass-loader!../assets/styles/_mixins.scss';
 import { configure } from '@storybook/vue'
 
-import SearchSelect from '../components/SearchSelect'
+import SearchSelect from '../components/searchSelect/SearchSelect'
 
 import "../assets/styles/main.scss"
 
