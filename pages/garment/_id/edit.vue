@@ -17,7 +17,7 @@
           @input="handleFieldChange('description', $event)"
         ></b-input>
       </b-field>
-      <button class="button is-primary">
+      <button class="button is-primary" @click="doSaveGarment">
         Save Garment
       </button>
     </div>
@@ -28,33 +28,49 @@
 import Vue from 'vue'
 import { Garment } from '~/fragmentTypes'
 import { GET_GARMENT_DATA } from '~/queries/getGarmentData'
+import { UPDATE_GARMENT } from '~/queries/updateGarment'
 
 export default Vue.extend({
-  async asyncData(ctx): Promise<void | { garmentData: Garment }> {
+  async asyncData(
+    ctx
+  ): Promise<void | {
+    garmentId: string | null
+    garmentData: Garment
+  }> {
+    let garmentId = null
     try {
-      const garmentId = ctx.params.id
+      garmentId = ctx.params.id
       const response = await ctx?.app?.apolloProvider?.defaultClient?.query({
         query: GET_GARMENT_DATA,
         variables: {
           garmentId: String(garmentId),
         },
       })
-      console.log(response) //eslint-disable-line
       const { garmentData } = response?.data || {}
-      return { garmentData }
+      return { garmentId, garmentData }
     } catch (e) {
       return {
+        garmentId,
         garmentData: {} as Garment,
       }
     }
   },
   data() {
     return {
+      garmentId: '',
       garmentData: {} as Garment,
     }
   },
-  computed: {},
   methods: {
+    async doSaveGarment() {
+      await this.$apollo.mutate({
+        mutation: UPDATE_GARMENT,
+        variables: {
+          garmentId: this.$data.garmentId,
+          garmentData: this.$data.garmentData,
+        },
+      })
+    },
     handleFieldChange(field: string, value: string): void {
       console.log(field, value) //eslint-disable-line
     },

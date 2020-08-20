@@ -129,13 +129,12 @@ export default Vue.extend({
   methods: {
     async doSaveGarment() {
       if (this.canSubmit) {
-        const resp = await this.$apollo.mutate({
+        await this.$apollo.mutate({
           mutation: CREATE_GARMENT,
           variables: {
             input: this.$accessor.newGarmentData.createGarmentPayload,
           },
         })
-        console.log(resp) //eslint-disable-line
       }
     },
     onBrandSelect(selectedBrand: SearchResult): void {
