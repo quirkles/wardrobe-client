@@ -70,4 +70,12 @@ export default {
   styleResources: {
     scss: ['./assets/styles/variables.scss', './assets/styles/_mixins.scss'],
   },
+  router: {
+    extendRoutes(routes) {
+      routes.push({
+        path: '/',
+        redirect: '/login',
+      })
+    },
+  },
 }

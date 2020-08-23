@@ -23,7 +23,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import { GET_GARMENTS_FOR_USER } from '~/queries/getGarmentsForUser'
-import { GetGarmentsForUser } from '~/queries/__generated__/GetGarmentsForUser'
+import { Garment } from '~/fragmentTypes'
 
 export default Vue.extend({
   middleware: 'loggedIn',
@@ -43,7 +43,7 @@ export default Vue.extend({
   },
   data() {
     return {
-      getUserByIdResponse: {} as GetGarmentsForUser,
+      getUserByIdResponse: {} as Garment,
     }
   },
   computed: {

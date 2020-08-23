@@ -56,7 +56,7 @@
 import Vue from 'vue'
 import { SIGNUP } from '~/queries/signup'
 import { Credentials } from '~/store/unauthenticatedUserCredentials'
-import { CreateUserInput } from '~/__generated__/globalTypes'
+import { CreateUserInput } from '~/fragmentTypes'
 
 export default Vue.extend({
   data() {

@@ -7,6 +7,7 @@ export interface NewGarmentDataState {
   description: string | null
   ownerId: string | null
   brandId: string | null
+  colorId: string | null
   categoryId: string | null
   subCategoryId: string | null
   imageUrls: string[]
@@ -16,6 +17,7 @@ export const state = (): NewGarmentDataState => ({
   description: null,
   ownerId: null,
   brandId: null,
+  colorId: null,
   categoryId: null,
   subCategoryId: null,
   imageUrls: [],
@@ -44,6 +46,7 @@ export const getters = getterTree(state, {
       title: state.title,
       description: state.description,
       brandId: state.brandId,
+      colorId: state.colorId,
       categoryId: state.categoryId,
       subCategoryId: state.subCategoryId,
     }
@@ -73,6 +76,9 @@ export const mutations = mutationTree(state, {
   },
   setBrandId(state: NewGarmentDataState, brandId: string) {
     Vue.set(state, 'brandId', brandId)
+  },
+  setColorId(state: NewGarmentDataState, colorId: string) {
+    Vue.set(state, 'colorId', colorId)
   },
   addImageUrl(state: NewGarmentDataState, urlToAdd: string) {
     Vue.set(state.imageUrls, state.imageUrls.length, urlToAdd)

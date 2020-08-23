@@ -25,6 +25,13 @@
           @select="onBrandSelect"
         ></search-select>
       </b-field>
+      <b-field label="Color">
+        <search-select
+          :get-results="findColors"
+          placeholder="Search For Color"
+          @select="onColorSelect"
+        ></search-select>
+      </b-field>
       <b-field label="Category">
         <b-select
           v-model="newGarmentDataSettableStringFields.categoryId"
@@ -66,11 +73,16 @@
 <script lang="ts">
 import Vue from 'vue'
 import { GET_GARMENT_METADATA } from '~/queries/getGarmentMetaData'
-import { GarmentCategory, GarmentSubCategory } from '~/fragmentTypes'
+import { SEARCH_COLORS } from '~/queries/findColors'
+import {
+  Brand,
+  Color,
+  GarmentCategory,
+  GarmentSubCategory,
+} from '~/fragmentTypes'
 import { NewGarmentDataState } from '~/store/newGarmentData'
 import { SearchResult } from '~/components/searchSelect/searchSelectTypes'
 import { SEARCH_BRANDS } from '~/queries/findBrands'
-import { GetGarmentMetaData_brands as GetGarmentMetaDataBrand } from '~/queries/__generated__/GetGarmentMetaData'
 import { CREATE_GARMENT } from '~/queries/createGarment'
 
 export default Vue.extend({
@@ -140,6 +152,9 @@ export default Vue.extend({
     onBrandSelect(selectedBrand: SearchResult): void {
       this.$accessor.newGarmentData.setBrandId(selectedBrand.value)
     },
+    onColorSelect(selectedColor: SearchResult): void {
+      this.$accessor.newGarmentData.setColorId(selectedColor.value)
+    },
     async findBrands(searchTerm: string): Promise<SearchResult[]> {
       const resp = await this.$apollo.query({
         query: SEARCH_BRANDS,
@@ -149,9 +164,25 @@ export default Vue.extend({
       })
       return resp.data.brands
         .map(
-          (brand: GetGarmentMetaDataBrand): SearchResult => ({
+          (brand: Brand): SearchResult => ({
             text: brand.name,
             value: brand.id,
+          })
+        )
+        .slice(0, 12)
+    },
+    async findColors(searchTerm: string): Promise<SearchResult[]> {
+      const resp = await this.$apollo.query({
+        query: SEARCH_COLORS,
+        variables: {
+          searchTerm,
+        },
+      })
+      return resp.data.colors
+        .map(
+          (color: Color): SearchResult => ({
+            text: color.name,
+            value: color.id,
           })
         )
         .slice(0, 12)

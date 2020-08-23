@@ -17,6 +17,14 @@ export type Brand = {
   garments: Array<Garment>;
 };
 
+export type Color = {
+  __typename?: 'Color';
+  id: Scalars['ID'];
+  slug: Scalars['String'];
+  name: Scalars['String'];
+  garments: Array<Garment>;
+};
+
 export type CreateGarmentInput = {
   ownerId: Scalars['String'];
   title: Scalars['String'];
@@ -65,6 +73,7 @@ export type Garment = {
   description: Scalars['String'];
   owner: User;
   brand: Brand;
+  color: Color;
   category: GarmentCategory;
   subCategory: GarmentSubCategory;
   images: Array<GarmentImage>;
@@ -148,6 +157,8 @@ export type Query = {
   getUserById: GetUserByIdResult;
   getBrands: Array<Brand>;
   getCategories: Array<GarmentCategory>;
+  getGarmentById: Garment;
+  getColors: Array<Color>;
 };
 
 
@@ -157,6 +168,16 @@ export type QueryGetUserByIdArgs = {
 
 
 export type QueryGetBrandsArgs = {
+  query: Scalars['String'];
+};
+
+
+export type QueryGetGarmentByIdArgs = {
+  garmentId: Scalars['String'];
+};
+
+
+export type QueryGetColorsArgs = {
   query: Scalars['String'];
 };
 
