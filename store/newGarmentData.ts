@@ -35,6 +35,7 @@ export const getters = getterTree(state, {
       title: state.title || '',
       description: state.description || '',
       brandId: state.brandId || '',
+      colorId: state.colorId || '',
       subCategoryId: state.subCategoryId || '',
       ownerId: state.ownerId || '',
     }

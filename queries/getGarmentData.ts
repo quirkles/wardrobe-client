@@ -6,6 +6,16 @@ export const GET_GARMENT_DATA = gql`
       id
       title
       description
+      brand {
+        id
+        name
+        slug
+      }
+      color {
+        id
+        name
+        slug
+      }
     }
   }
 `

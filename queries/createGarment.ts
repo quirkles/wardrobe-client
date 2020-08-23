@@ -23,6 +23,9 @@ export const CREATE_GARMENT = gql`
         brand {
           name
         }
+        color {
+          name
+        }
       }
       ... on UnauthorizedError {
         __typename

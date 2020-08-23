@@ -1,5 +1,6 @@
 <template>
-  <div id="garment-list-page" class="container pt-4">
+  <div id="garment-edit-page" class="container pt-4">
+    <h1 class="is-size-1">Edit Garment</h1>
     <div class="content">
       <b-field label="Title">
         <b-input
@@ -17,6 +18,13 @@
           @input="handleFieldChange('description', $event)"
         ></b-input>
       </b-field>
+      <b-field label="Brand">
+        <search-select
+          :get-results="findBrands"
+          placeholder="Search For Brand"
+          @select="onBrandSelect"
+        ></search-select>
+      </b-field>
       <button class="button is-primary" @click="doSaveGarment">
         Save Garment
       </button>
@@ -26,9 +34,11 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { Garment } from '~/fragmentTypes'
+import { Brand, Garment } from '~/fragmentTypes'
 import { GET_GARMENT_DATA } from '~/queries/getGarmentData'
 import { UPDATE_GARMENT } from '~/queries/updateGarment'
+import { SearchResult } from '~/components/searchSelect/searchSelectTypes'
+import { SEARCH_BRANDS } from '~/queries/findBrands'
 
 export default Vue.extend({
   async asyncData(
@@ -47,8 +57,12 @@ export default Vue.extend({
         },
       })
       const { garmentData } = response?.data || {}
+      console.log('garmentData') //eslint-disable-line
+      console.log(garmentData) //eslint-disable-line
       return { garmentId, garmentData }
     } catch (e) {
+      console.log('err') //eslint-disable-line
+      console.log(e.apolloErrors) //eslint-disable-line
       return {
         garmentId,
         garmentData: {} as Garment,
@@ -73,6 +87,25 @@ export default Vue.extend({
     },
     handleFieldChange(field: string, value: string): void {
       console.log(field, value) //eslint-disable-line
+    },
+    async findBrands(searchTerm: string): Promise<SearchResult[]> {
+      const resp = await this.$apollo.query({
+        query: SEARCH_BRANDS,
+        variables: {
+          searchTerm,
+        },
+      })
+      return resp.data.brands
+        .map(
+          (brand: Brand): SearchResult => ({
+            text: brand.name,
+            value: brand.id,
+          })
+        )
+        .slice(0, 12)
+    },
+    onBrandSelect(selectedBrand: SearchResult): void {
+      this.$accessor.newGarmentData.setBrandId(selectedBrand.value)
     },
   },
 })

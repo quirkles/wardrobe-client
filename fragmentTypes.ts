@@ -30,6 +30,7 @@ export type CreateGarmentInput = {
   title: Scalars['String'];
   description: Scalars['String'];
   brandId: Scalars['String'];
+  colorId: Scalars['String'];
   subCategoryId: Scalars['String'];
   imageUrls?: Maybe<Array<Scalars['String']>>;
 };
