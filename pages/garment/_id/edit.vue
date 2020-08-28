@@ -21,9 +21,48 @@
       <b-field label="Brand">
         <search-select
           :get-results="findBrands"
+          :selected-value="selectedBrandData"
           placeholder="Search For Brand"
           @select="onBrandSelect"
         ></search-select>
+      </b-field>
+      <b-field label="Color">
+        <search-select
+          :get-results="findColors"
+          :selected-value="selectedColorData"
+          placeholder="Search For Color"
+          @select="onColorSelect"
+        ></search-select>
+      </b-field>
+      <b-field label="Category">
+        <b-select
+          v-model="selectedCategoryId"
+          placeholder="Select a category"
+          @input="handleFieldChange('categoryId', $event)"
+        >
+          <option
+            v-for="category in categories"
+            :key="category.id"
+            :value="category.id"
+          >
+            {{ category.name }}
+          </option>
+        </b-select>
+      </b-field>
+      <b-field label="Sub-Category">
+        <b-select
+          v-model="selectedSubCategoryId"
+          placeholder="Select a sub-category"
+          @input="handleFieldChange('subCategoryId', $event)"
+        >
+          <option
+            v-for="subcategory of subcategories"
+            :key="subcategory.id"
+            :value="subcategory.id"
+          >
+            {{ subcategory.name }}
+          </option>
+        </b-select>
       </b-field>
       <button class="button is-primary" @click="doSaveGarment">
         Save Garment
@@ -34,61 +73,120 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { Brand, Garment } from '~/fragmentTypes'
-import { GET_GARMENT_DATA } from '~/queries/getGarmentData'
+import {
+  Brand,
+  Color,
+  Garment,
+  GarmentCategory,
+  GarmentSubCategory,
+} from '~/fragmentTypes'
 import { UPDATE_GARMENT } from '~/queries/updateGarment'
-import { SearchResult } from '~/components/searchSelect/searchSelectTypes'
+import { SearchSelectItem } from '~/components/searchSelect/searchSelectTypes'
 import { SEARCH_BRANDS } from '~/queries/findBrands'
+import { SEARCH_COLORS } from '~/queries/findColors'
+import { EDIT_GARMENT_DATA } from '~/queries/editGarmentData'
+
+interface DataType {
+  categories: GarmentCategory[]
+  garmentId: string | null
+  garmentData: Garment
+  selectedBrandData: SearchSelectItem
+  selectedColorData: SearchSelectItem
+  selectedCategoryId: string
+  selectedSubCategoryId: string
+}
 
 export default Vue.extend({
-  async asyncData(
-    ctx
-  ): Promise<void | {
-    garmentId: string | null
-    garmentData: Garment
-  }> {
+  async asyncData(ctx): Promise<void | DataType> {
     let garmentId = null
     try {
       garmentId = ctx.params.id
       const response = await ctx?.app?.apolloProvider?.defaultClient?.query({
-        query: GET_GARMENT_DATA,
+        query: EDIT_GARMENT_DATA,
         variables: {
           garmentId: String(garmentId),
         },
       })
-      const { garmentData } = response?.data || {}
-      console.log('garmentData') //eslint-disable-line
-      console.log(garmentData) //eslint-disable-line
-      return { garmentId, garmentData }
-    } catch (e) {
-      console.log('err') //eslint-disable-line
-      console.log(e.apolloErrors) //eslint-disable-line
+      const { garmentData, categories } = response?.data || {}
+      const {
+        brand: selectedBrand,
+        color: selectedColor,
+        category: selectedCategory,
+        subCategory: selectedSubCategory,
+      } = {
+        ...(garmentData as Garment),
+      }
       return {
+        categories,
+        garmentId,
+        garmentData,
+        selectedCategoryId: selectedCategory?.id,
+        selectedSubCategoryId: selectedSubCategory?.id,
+        selectedBrandData: {
+          text: selectedBrand.name,
+          value: selectedBrand.id,
+        },
+        selectedColorData: {
+          text: selectedColor.name,
+          value: selectedColor.id,
+        },
+      }
+    } catch (e) {
+      return {
+        categories: [],
         garmentId,
         garmentData: {} as Garment,
+        selectedBrandData: {} as SearchSelectItem,
+        selectedColorData: {} as SearchSelectItem,
+        selectedCategoryId: '',
+        selectedSubCategoryId: '',
       }
     }
   },
-  data() {
+  data(): DataType {
     return {
+      categories: [],
       garmentId: '',
       garmentData: {} as Garment,
+      selectedBrandData: {} as SearchSelectItem,
+      selectedColorData: {} as SearchSelectItem,
+      selectedCategoryId: '',
+      selectedSubCategoryId: '',
     }
+  },
+  computed: {
+    subcategories(): GarmentSubCategory[] {
+      return (
+        (
+          this.categories.find(
+            (category) => category.id === this.selectedCategoryId
+          ) || {}
+        ).subCategories || []
+      )
+    },
   },
   methods: {
     async doSaveGarment() {
+      const { title, description, brand, color, subCategory } = this.garmentData
+      const garmentData = {
+        title,
+        description,
+        garmentId: this.garmentId,
+        brandId: this.selectedBrandData?.value || brand.id,
+        colorId: this.selectedColorData?.value || color.id,
+        subCategoryId: this.selectedSubCategoryId || subCategory.id,
+      }
       await this.$apollo.mutate({
         mutation: UPDATE_GARMENT,
         variables: {
-          garmentId: this.$data.garmentId,
-          garmentData: this.$data.garmentData,
+          garmentData,
         },
       })
     },
     handleFieldChange(field: string, value: string): void {
-      console.log(field, value) //eslint-disable-line
+      this.$set(this.garmentData, field, value)
     },
-    async findBrands(searchTerm: string): Promise<SearchResult[]> {
+    async findBrands(searchTerm: string): Promise<SearchSelectItem[]> {
       const resp = await this.$apollo.query({
         query: SEARCH_BRANDS,
         variables: {
@@ -97,15 +195,34 @@ export default Vue.extend({
       })
       return resp.data.brands
         .map(
-          (brand: Brand): SearchResult => ({
+          (brand: Brand): SearchSelectItem => ({
             text: brand.name,
             value: brand.id,
           })
         )
         .slice(0, 12)
     },
-    onBrandSelect(selectedBrand: SearchResult): void {
-      this.$accessor.newGarmentData.setBrandId(selectedBrand.value)
+    async findColors(searchTerm: string): Promise<SearchSelectItem[]> {
+      const resp = await this.$apollo.query({
+        query: SEARCH_COLORS,
+        variables: {
+          searchTerm,
+        },
+      })
+      return resp.data.colors
+        .map(
+          (color: Color): SearchSelectItem => ({
+            text: color.name,
+            value: color.id,
+          })
+        )
+        .slice(0, 12)
+    },
+    onBrandSelect(selectedBrand: SearchSelectItem): void {
+      this.selectedBrandData = selectedBrand
+    },
+    onColorSelect(selectedColor: SearchSelectItem): void {
+      this.selectedColorData = selectedColor
     },
   },
 })

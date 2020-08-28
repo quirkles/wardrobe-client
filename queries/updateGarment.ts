@@ -1,11 +1,8 @@
 import gql from 'graphql-tag'
 
 export const UPDATE_GARMENT = gql`
-  query UpdateGarment($garmentId: String!, $garmentData: UpdateGarmentInput!) {
-    garmentData: updateGarment(
-      garmentId: $garmentId
-      garmentData: $garmentData
-    ) {
+  mutation UpdateGarment($garmentData: UpdateGarmentInput!) {
+    garmentData: updateGarment(garmentData: $garmentData) {
       ... on Garment {
         id
       }

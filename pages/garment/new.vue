@@ -81,7 +81,7 @@ import {
   GarmentSubCategory,
 } from '~/fragmentTypes'
 import { NewGarmentDataState } from '~/store/newGarmentData'
-import { SearchResult } from '~/components/searchSelect/searchSelectTypes'
+import { SearchSelectItem } from '~/components/searchSelect/searchSelectTypes'
 import { SEARCH_BRANDS } from '~/queries/findBrands'
 import { CREATE_GARMENT } from '~/queries/createGarment'
 
@@ -149,13 +149,13 @@ export default Vue.extend({
         })
       }
     },
-    onBrandSelect(selectedBrand: SearchResult): void {
+    onBrandSelect(selectedBrand: SearchSelectItem): void {
       this.$accessor.newGarmentData.setBrandId(selectedBrand.value)
     },
-    onColorSelect(selectedColor: SearchResult): void {
+    onColorSelect(selectedColor: SearchSelectItem): void {
       this.$accessor.newGarmentData.setColorId(selectedColor.value)
     },
-    async findBrands(searchTerm: string): Promise<SearchResult[]> {
+    async findBrands(searchTerm: string): Promise<SearchSelectItem[]> {
       const resp = await this.$apollo.query({
         query: SEARCH_BRANDS,
         variables: {
@@ -164,14 +164,14 @@ export default Vue.extend({
       })
       return resp.data.brands
         .map(
-          (brand: Brand): SearchResult => ({
+          (brand: Brand): SearchSelectItem => ({
             text: brand.name,
             value: brand.id,
           })
         )
         .slice(0, 12)
     },
-    async findColors(searchTerm: string): Promise<SearchResult[]> {
+    async findColors(searchTerm: string): Promise<SearchSelectItem[]> {
       const resp = await this.$apollo.query({
         query: SEARCH_COLORS,
         variables: {
@@ -180,7 +180,7 @@ export default Vue.extend({
       })
       return resp.data.colors
         .map(
-          (color: Color): SearchResult => ({
+          (color: Color): SearchSelectItem => ({
             text: color.name,
             value: color.id,
           })

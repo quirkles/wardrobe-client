@@ -25,3 +25,7 @@ declare module 'vue/types/vue' {
     $accessor: typeof accessorType
   }
 }
+
+export interface VueRefEl extends Element {
+  getElement(): HTMLElement
+}

@@ -1,6 +1,6 @@
 import faker from 'faker'
 
-import { SearchResult } from '~/components/searchSelect/searchSelectTypes'
+import { SearchSelectItem } from '~/components/searchSelect/searchSelectTypes'
 
 faker.seed(1234)
 
@@ -16,7 +16,7 @@ export default { title: 'SearchSelect' }
 export const withText = () => {
   return {
     methods: {
-      onSelect(value: SearchResult) {
+      onSelect(value: SearchSelectItem) {
         console.log(value) //eslint-disable-line
       },
       getResults(value: string) {

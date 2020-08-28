@@ -1,7 +1,7 @@
 <template>
   <div class="search-select">
     <div v-show="!isSearching">
-      <a @click="toggleIsSearching">{{ displayText }}</a>
+      <a tabindex="1" @click="toggleIsSearching">{{ displayText }}</a>
     </div>
     <div v-show="isSearching">
       <div class="overlay" @click="toggleIsSearching" />
@@ -10,7 +10,7 @@
           <b-input
             ref="searchBox"
             v-model="query"
-            :placeholder="$props.placeholder"
+            :placeholder="displayText"
             @input="handleChange"
           ></b-input>
         </b-field>
@@ -29,14 +29,14 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
-import { SearchResult } from '~/components/searchSelect/searchSelectTypes'
+import Vue, { PropType } from 'vue'
+import { SearchSelectItem } from '~/components/searchSelect/searchSelectTypes'
 import { debounce } from '~/utils/debounce'
+import { VueRefEl } from '~/index'
 interface DataType {
   isSearching: boolean
   query: null | string
-  results: SearchResult[]
-  selectedResult: SearchResult | null
+  results: SearchSelectItem[]
 }
 export default Vue.extend({
   props: {
@@ -48,18 +48,26 @@ export default Vue.extend({
       type: Function,
       required: true,
     },
+    selectedValue: {
+      type: Object as PropType<SearchSelectItem | null>,
+      default: null,
+      required: false,
+    },
   },
   data(): DataType {
     return {
       isSearching: false,
-      query: null,
+      query: this.$props?.selectedValue?.text || '',
       results: [],
-      selectedResult: null,
     }
   },
   computed: {
     displayText(): string {
-      return this.selectedResult?.text || this.$props.placeholder
+      return (
+        this.$props?.selectedValue?.text ||
+        this.$props.placeholder ||
+        'Search for brand'
+      )
     },
   },
   methods: {
@@ -67,10 +75,14 @@ export default Vue.extend({
       this.isSearching = !this.isSearching
       if (this.isSearching) {
         ;(this.$refs.searchBox as HTMLInputElement).focus()
+        ;((this.$refs
+          .searchBox as VueRefEl).getElement() as HTMLInputElement).setSelectionRange(
+          this.query?.length || 0,
+          this.query?.length || 0
+        )
       }
     },
-    handleSelect(result: SearchResult): void {
-      this.selectedResult = result
+    handleSelect(result: SearchSelectItem): void {
       this.isSearching = false
       this.$emit('select', result)
     },
