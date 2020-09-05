@@ -1,72 +1,79 @@
 <template>
   <div id="garment-edit-page" class="container pt-4">
-    <h1 class="is-size-1">Edit Garment</h1>
-    <div class="content">
-      <b-field label="Title">
-        <b-input
-          v-model="garmentData.title"
-          placeholder="Soloist Mickey Mouise Hoodie"
-          type="text"
-          @input="handleFieldChange('title', $event)"
-        ></b-input>
-      </b-field>
-      <b-field label="Description">
-        <b-input
-          v-model="garmentData.description"
-          placeholder="Oversized lightweight hoodie in black"
-          type="textarea"
-          @input="handleFieldChange('description', $event)"
-        ></b-input>
-      </b-field>
-      <b-field label="Brand">
-        <search-select
-          :get-results="findBrands"
-          :selected-value="selectedBrandData"
-          placeholder="Search For Brand"
-          @select="onBrandSelect"
-        ></search-select>
-      </b-field>
-      <b-field label="Color">
-        <search-select
-          :get-results="findColors"
-          :selected-value="selectedColorData"
-          placeholder="Search For Color"
-          @select="onColorSelect"
-        ></search-select>
-      </b-field>
-      <b-field label="Category">
-        <b-select
-          v-model="selectedCategoryId"
-          placeholder="Select a category"
-          @input="handleFieldChange('categoryId', $event)"
-        >
-          <option
-            v-for="category in categories"
-            :key="category.id"
-            :value="category.id"
-          >
-            {{ category.name }}
-          </option>
-        </b-select>
-      </b-field>
-      <b-field label="Sub-Category">
-        <b-select
-          v-model="selectedSubCategoryId"
-          placeholder="Select a sub-category"
-          @input="handleFieldChange('subCategoryId', $event)"
-        >
-          <option
-            v-for="subcategory of subcategories"
-            :key="subcategory.id"
-            :value="subcategory.id"
-          >
-            {{ subcategory.name }}
-          </option>
-        </b-select>
-      </b-field>
-      <button class="button is-primary" @click="doSaveGarment">
-        Save Garment
-      </button>
+    <div class="columns is-multiline">
+      <div class="column is-full-mobile is-half-desktop">
+        <h1 class="is-size-1">Edit Garment</h1>
+        <div class="content">
+          <b-field label="Title">
+            <b-input
+              v-model="garmentData.title"
+              placeholder="Soloist Mickey Mouise Hoodie"
+              type="text"
+              @input="handleFieldChange('title', $event)"
+            ></b-input>
+          </b-field>
+          <b-field label="Description">
+            <b-input
+              v-model="garmentData.description"
+              placeholder="Oversized lightweight hoodie in black"
+              type="textarea"
+              @input="handleFieldChange('description', $event)"
+            ></b-input>
+          </b-field>
+          <b-field label="Brand">
+            <search-select
+              :get-results="findBrands"
+              :selected-value="selectedBrandData"
+              placeholder="Search For Brand"
+              @select="onBrandSelect"
+            ></search-select>
+          </b-field>
+          <b-field label="Color">
+            <search-select
+              :get-results="findColors"
+              :selected-value="selectedColorData"
+              placeholder="Search For Color"
+              @select="onColorSelect"
+            ></search-select>
+          </b-field>
+          <b-field label="Category">
+            <b-select
+              v-model="selectedCategoryId"
+              placeholder="Select a category"
+              @input="handleFieldChange('categoryId', $event)"
+            >
+              <option
+                v-for="category in categories"
+                :key="category.id"
+                :value="category.id"
+              >
+                {{ category.name }}
+              </option>
+            </b-select>
+          </b-field>
+          <b-field label="Sub-Category">
+            <b-select
+              v-model="selectedSubCategoryId"
+              placeholder="Select a sub-category"
+              @input="handleFieldChange('subCategoryId', $event)"
+            >
+              <option
+                v-for="subcategory of subcategories"
+                :key="subcategory.id"
+                :value="subcategory.id"
+              >
+                {{ subcategory.name }}
+              </option>
+            </b-select>
+          </b-field>
+          <button class="button is-primary" @click="doSaveGarment">
+            Save Garment
+          </button>
+        </div>
+      </div>
+      <div class="column is-full-mobile is-half-desktop">
+        <image-grid />
+      </div>
     </div>
   </div>
 </template>
@@ -78,6 +85,7 @@ import {
   Color,
   Garment,
   GarmentCategory,
+  GarmentImage,
   GarmentSubCategory,
 } from '~/fragmentTypes'
 import { UPDATE_GARMENT } from '~/queries/updateGarment'
@@ -94,6 +102,7 @@ interface DataType {
   selectedColorData: SearchSelectItem
   selectedCategoryId: string
   selectedSubCategoryId: string
+  images: GarmentImage[]
 }
 
 export default Vue.extend({
@@ -107,12 +116,14 @@ export default Vue.extend({
           garmentId: String(garmentId),
         },
       })
+      console.log(response) //eslint-disable-line
       const { garmentData, categories } = response?.data || {}
       const {
         brand: selectedBrand,
         color: selectedColor,
         category: selectedCategory,
         subCategory: selectedSubCategory,
+        images,
       } = {
         ...(garmentData as Garment),
       }
@@ -120,6 +131,7 @@ export default Vue.extend({
         categories,
         garmentId,
         garmentData,
+        images,
         selectedCategoryId: selectedCategory?.id,
         selectedSubCategoryId: selectedSubCategory?.id,
         selectedBrandData: {
@@ -132,9 +144,11 @@ export default Vue.extend({
         },
       }
     } catch (e) {
+      console.log(e) //eslint-disable-line
       return {
-        categories: [],
+        categories: [] as GarmentCategory[],
         garmentId,
+        images: [] as GarmentImage[],
         garmentData: {} as Garment,
         selectedBrandData: {} as SearchSelectItem,
         selectedColorData: {} as SearchSelectItem,
@@ -145,6 +159,7 @@ export default Vue.extend({
   },
   data(): DataType {
     return {
+      images: [],
       categories: [],
       garmentId: '',
       garmentData: {} as Garment,

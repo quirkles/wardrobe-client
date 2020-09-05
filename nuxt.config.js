@@ -50,11 +50,15 @@ export default {
   /*
    ** Nuxt.js dev-modules
    */
-  buildModules: ['@nuxt/typescript-build', 'nuxt-typed-vuex'],
+  buildModules: [
+    '@nuxt/typescript-build',
+    'nuxt-typed-vuex',
+    '@nuxtjs/fontawesome',
+  ],
   /*
    ** Nuxt.js modules
    */
-  modules: ['@nuxtjs/apollo', '@nuxtjs/style-resources'],
+  modules: ['@nuxtjs/apollo', '@nuxtjs/style-resources', '@nuxtjs/fontawesome'],
   /*
    ** Build configuration
    ** See https://nuxtjs.org/api/configuration-build/
@@ -69,6 +73,15 @@ export default {
   },
   styleResources: {
     scss: ['./assets/styles/variables.scss', './assets/styles/_mixins.scss'],
+  },
+  fontawesome: {
+    icons: {
+      solid: ['faPlus'],
+      regular: [],
+      light: [],
+      duotone: [],
+      brands: [],
+    },
   },
   router: {
     extendRoutes(routes) {

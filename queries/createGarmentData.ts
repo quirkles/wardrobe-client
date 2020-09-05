@@ -1,7 +1,7 @@
 import gql from 'graphql-tag'
 
-export const GET_GARMENT_METADATA = gql`
-  query GetGarmentMetaData {
+export const CREATE_GARMENT_DATA = gql`
+  query createGarmentData {
     categories: getCategories {
       id
       name

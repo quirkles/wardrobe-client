@@ -1,7 +1,10 @@
 const path = require('path');
+const webpack = require('webpack');
+
+require('dotenv').config()
 
 module.exports = async ({ config }) => {
-
+  // config.target = 'node'
   function resolve(dir) {
     return path.join(__dirname, '..', dir);
   }
@@ -49,6 +52,14 @@ module.exports = async ({ config }) => {
       '~': path.dirname(path.resolve(__dirname))
     },
   };
+
+  config.plugins.push(
+    new webpack.DefinePlugin({
+      AWS_BUCKET_NAME: process.env.AWS_BUCKET_NAME,
+      AWS_BUCKET_REGION: process.env.AWS_BUCKET_REGION,
+      AWS_IDENTITY_POOL_ID: process.env.AWS_IDENTITY_POOL_ID,
+    })
+  );
 
   return config;
 };

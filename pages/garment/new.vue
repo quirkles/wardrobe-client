@@ -1,159 +1,175 @@
 <template>
-  <div id="create-garment-page" class="container pt-4">
-    <h1 class="is-size-1">Add Garment</h1>
-    <div class="content">
-      <b-field label="Title">
-        <b-input
-          v-model="newGarmentDataSettableStringFields.title"
-          placeholder="Soloist Mickey Mouise Hoodie"
-          type="text"
-          @input="handleFieldChange('title', $event)"
-        ></b-input>
-      </b-field>
-      <b-field label="Description">
-        <b-input
-          v-model="newGarmentDataSettableStringFields.description"
-          placeholder="Oversized lightweight hoodie in black"
-          type="textarea"
-          @input="handleFieldChange('description', $event)"
-        ></b-input>
-      </b-field>
-      <b-field label="Brand">
-        <search-select
-          :get-results="findBrands"
-          placeholder="Search For Brand"
-          @select="onBrandSelect"
-        ></search-select>
-      </b-field>
-      <b-field label="Color">
-        <search-select
-          :get-results="findColors"
-          placeholder="Search For Color"
-          @select="onColorSelect"
-        ></search-select>
-      </b-field>
-      <b-field label="Category">
-        <b-select
-          v-model="newGarmentDataSettableStringFields.categoryId"
-          placeholder="Select a category"
-          @input="handleFieldChange('categoryId', $event)"
-        >
-          <option
-            v-for="category in categories"
-            :key="category.id"
-            :value="category.id"
-          >
-            {{ category.name }}
-          </option>
-        </b-select>
-      </b-field>
-      <b-field label="Sub-Category">
-        <b-select
-          v-model="newGarmentDataSettableStringFields.subCategoryId"
-          :disabled="isSubcategoryDropdownDisabled"
-          placeholder="Select a sub-category"
-          @input="handleFieldChange('subCategoryId', $event)"
-        >
-          <option
-            v-for="subcategory of subcategories"
-            :key="subcategory.id"
-            :value="subcategory.id"
-          >
-            {{ subcategory.name }}
-          </option>
-        </b-select>
-      </b-field>
-      <button class="button is-primary" @click="doSaveGarment">
-        Save Garment
-      </button>
+  <div id="garment-create-page" class="container pt-4">
+    <div class="columns is-multiline">
+      <div class="column is-full">
+        <h1 class="is-size-1">Create Garment</h1>
+      </div>
+      <div class="column is-full-mobile is-half-desktop">
+        <div class="content">
+          <b-field label="Title">
+            <b-input
+              v-model="garmentData.title"
+              placeholder="Soloist Mickey Mouise Hoodie"
+              type="text"
+              @input="handleFieldChange('title', $event)"
+            ></b-input>
+          </b-field>
+          <b-field label="Description">
+            <b-input
+              v-model="garmentData.description"
+              placeholder="Oversized lightweight hoodie in black"
+              type="textarea"
+              @input="handleFieldChange('description', $event)"
+            ></b-input>
+          </b-field>
+          <b-field label="Brand">
+            <search-select
+              :get-results="findBrands"
+              :selected-value="selectedBrandData"
+              placeholder="Search For Brand"
+              @select="onBrandSelect"
+            ></search-select>
+          </b-field>
+          <b-field label="Color">
+            <search-select
+              :get-results="findColors"
+              :selected-value="selectedColorData"
+              placeholder="Search For Color"
+              @select="onColorSelect"
+            ></search-select>
+          </b-field>
+          <b-field label="Category">
+            <b-select
+              v-model="selectedCategoryId"
+              placeholder="Select a category"
+              expanded
+              @input="handleFieldChange('categoryId', $event)"
+            >
+              <option
+                v-for="category in categories"
+                :key="category.id"
+                :value="category.id"
+              >
+                {{ category.name }}
+              </option>
+            </b-select>
+          </b-field>
+          <b-field label="Sub-Category">
+            <b-select
+              v-model="selectedSubCategoryId"
+              placeholder="Select a sub-category"
+              expanded
+              @input="handleFieldChange('subCategoryId', $event)"
+            >
+              <option
+                v-for="subcategory of subcategories"
+                :key="subcategory.id"
+                :value="subcategory.id"
+              >
+                {{ subcategory.name }}
+              </option>
+            </b-select>
+          </b-field>
+          <button class="button is-primary" @click="doSaveGarment">
+            Save Garment
+          </button>
+        </div>
+      </div>
+      <div class="column is-full-mobile is-half-desktop">
+        <image-grid />
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
-import { GET_GARMENT_METADATA } from '~/queries/getGarmentMetaData'
-import { SEARCH_COLORS } from '~/queries/findColors'
+import { CREATE_GARMENT_DATA } from '~/queries/createGarmentData'
 import {
   Brand,
   Color,
+  Garment,
   GarmentCategory,
+  GarmentImage,
   GarmentSubCategory,
 } from '~/fragmentTypes'
-import { NewGarmentDataState } from '~/store/newGarmentData'
 import { SearchSelectItem } from '~/components/searchSelect/searchSelectTypes'
-import { SEARCH_BRANDS } from '~/queries/findBrands'
 import { CREATE_GARMENT } from '~/queries/createGarment'
+import { SEARCH_BRANDS } from '~/queries/findBrands'
+import { SEARCH_COLORS } from '~/queries/findColors'
+
+interface DataType {
+  categories: GarmentCategory[]
+  garmentId: string | null
+  garmentData: Garment
+  selectedBrandData: SearchSelectItem
+  selectedColorData: SearchSelectItem
+  selectedCategoryId: string | null
+  selectedSubCategoryId: string | null
+  images: GarmentImage[]
+}
 
 export default Vue.extend({
   middleware: 'loggedIn',
-  async asyncData(ctx): Promise<void | { categories: GarmentCategory[] }> {
+  async asyncData(ctx): Promise<void | Partial<DataType>> {
     try {
-      const userId = ctx.app.$accessor.sessionUser.id
-      ctx.app.$accessor.newGarmentData.updateStringField({
-        ownerId: String(userId),
-      })
       const response = await ctx?.app?.apolloProvider?.defaultClient?.query({
-        query: GET_GARMENT_METADATA,
-        variables: {
-          userId: String(userId),
-        },
+        query: CREATE_GARMENT_DATA,
       })
       const { categories } = response?.data || {}
-      return { categories }
+      return {
+        categories,
+      }
     } catch (e) {
       return {
         categories: [],
       }
     }
   },
-  data() {
+  data(): DataType {
     return {
+      selectedCategoryId: null,
+      selectedSubCategoryId: null,
+      garmentId: null,
+      images: [],
       categories: [] as GarmentCategory[],
+      garmentData: {} as Garment,
+      selectedBrandData: {} as SearchSelectItem,
+      selectedColorData: {} as SearchSelectItem
     }
   },
   computed: {
-    isSubcategoryDropdownDisabled(): boolean {
-      return !this.newGarmentDataSettableStringFields.categoryId
-    },
-    canSubmit(): boolean {
-      return this.$accessor.newGarmentData.isGarmentDataValid
-    },
-    newGarmentDataSettableStringFields(): Omit<
-      NewGarmentDataState,
-      'imageUrls' | 'ownerId'
-    > {
-      return this.$accessor.newGarmentData.settableStringFields
-    },
     subcategories(): GarmentSubCategory[] {
-      const { categoryId } = this.newGarmentDataSettableStringFields
-      const categories: GarmentCategory[] = this.categories
-      if (!categoryId) {
-        return []
-      } else {
-        return (
-          (categories.find((category) => category.id === categoryId) || {})
-            .subCategories || []
-        )
-      }
+      return (
+        (
+          (this.categories || []).find(
+            (category) => category.id === this.selectedCategoryId
+          ) || {}
+        ).subCategories || []
+      )
     },
   },
   methods: {
     async doSaveGarment() {
-      if (this.canSubmit) {
-        await this.$apollo.mutate({
-          mutation: CREATE_GARMENT,
-          variables: {
-            input: this.$accessor.newGarmentData.createGarmentPayload,
-          },
-        })
+      const userId = this.$accessor.sessionUser.id
+      const { title, description } = this.garmentData as Garment
+      const garmentData = {
+        title,
+        description,
+        ownerId: userId,
+        brandId: this.selectedBrandData?.value,
+        colorId: this.selectedColorData?.value,
+        subCategoryId: this.selectedSubCategoryId,
       }
+      await this.$apollo.mutate({
+        mutation: CREATE_GARMENT,
+        variables: {
+          garmentData,
+        },
+      })
     },
-    onBrandSelect(selectedBrand: SearchSelectItem): void {
-      this.$accessor.newGarmentData.setBrandId(selectedBrand.value)
-    },
-    onColorSelect(selectedColor: SearchSelectItem): void {
-      this.$accessor.newGarmentData.setColorId(selectedColor.value)
+    handleFieldChange(field: string, value: string): void {
+      this.$set(this.garmentData as Garment, field, value)
     },
     async findBrands(searchTerm: string): Promise<SearchSelectItem[]> {
       const resp = await this.$apollo.query({
@@ -187,11 +203,11 @@ export default Vue.extend({
         )
         .slice(0, 12)
     },
-    handleFieldChange(
-      field: keyof Omit<NewGarmentDataState, 'imageUrls'>,
-      value: string
-    ) {
-      this.$accessor.newGarmentData.updateStringField({ [field]: value })
+    onBrandSelect(selectedBrand: SearchSelectItem): void {
+      this.selectedBrandData = selectedBrand
+    },
+    onColorSelect(selectedColor: SearchSelectItem): void {
+      this.selectedColorData = selectedColor
     },
   },
 })

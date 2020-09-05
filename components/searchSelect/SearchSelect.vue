@@ -1,8 +1,8 @@
 <template>
   <div class="search-select">
-    <div v-show="!isSearching">
-      <a tabindex="1" @click="toggleIsSearching">{{ displayText }}</a>
-    </div>
+    <a v-show="!isSearching" tabindex="1" @click="toggleIsSearching">{{
+      displayText
+    }}</a>
     <div v-show="isSearching">
       <div class="overlay" @click="toggleIsSearching" />
       <div class="search-and-results">
@@ -97,7 +97,11 @@ export default Vue.extend({
 @import 'assets/styles/variables';
 @import 'assets/styles/mixins';
 .search-select {
-  display: inline-block;
+  a {
+    padding: $control-padding-vertical $control-padding-horizontal;
+    border-bottom: 1px dashed $blue;
+    display: block;
+  }
   .overlay {
     position: fixed;
     width: 100vw;

@@ -1,8 +1,8 @@
 import gql from 'graphql-tag'
 
 export const CREATE_GARMENT = gql`
-  mutation CreateGarment($input: CreateGarmentInput!) {
-    createGarment(input: $input) {
+  mutation CreateGarment($garmentData: CreateGarmentInput!) {
+    createGarment(garmentData: $garmentData) {
       ... on Garment {
         __typename
         id
