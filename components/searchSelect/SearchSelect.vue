@@ -94,8 +94,6 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
-@import 'assets/styles/variables';
-@import 'assets/styles/mixins';
 .search-select {
   a {
     padding: $control-padding-vertical $control-padding-horizontal;

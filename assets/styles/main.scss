@@ -1,8 +1,17 @@
 // Import theme overrides
 @import './theme/theme';
 
+$family-sans-serif: "IBM Plex Mono", "BlinkMacSystemFont", "-apple-system", "Segoe UI", "sans-serif";
+
+$indian-red: #BC5850;
+
+$custom-colors: (
+  "indian-red"  : ($indian-red, findColorInvert($indian-red)),
+);
+
+
 // Import buefy and bulma styles
-@import "~bulma/bulma.sass";
+@import "~bulma/bulma";
 @import "~buefy/src/scss/buefy";
 
 // Import app styles

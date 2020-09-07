@@ -8,6 +8,7 @@
           drag-drop
           expanded
           @input="onFileChange"
+          type="is-indian-red"
         >
           <section class="section">
             <div class="content has-text-centered">
@@ -33,11 +34,8 @@
 <script lang="ts">
 import Vue, { PropType } from 'vue'
 
+import { File } from './imageGridTypes'
 import { GarmentImage } from '~/fragmentTypes'
-
-interface File {
-  name: 'string'
-}
 
 interface DataType {
   fileModels: File[]
@@ -71,10 +69,15 @@ export default Vue.extend({
     display: flex;
     justify-content: center;
     align-items: center;
-    .upload {
-      .upload-draggable {
-        border: none;
-        border-radius: 0;
+    .file {
+      height: 100%;
+      .upload {
+        .upload-draggable {
+          display: flex;
+          align-items: center;
+          border: none;
+          border-radius: 0;
+        }
       }
     }
   }

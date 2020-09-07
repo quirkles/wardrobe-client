@@ -20,6 +20,9 @@ export const CREATE_GARMENT = gql`
             name
           }
         }
+        images {
+          url
+        }
         brand {
           name
         }

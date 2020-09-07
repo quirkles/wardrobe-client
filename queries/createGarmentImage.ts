@@ -1,8 +1,8 @@
 import gql from 'graphql-tag'
 
-export const CreateGarmentImage = gql`
-  mutation CreateGarmentImage($input: CreateGarmentImageInput!) {
-    loginUser(input: $input) {
+export const CREATE_GARMENT_IMAGE = gql`
+  mutation CreateGarmentImage($garmentImageData: CreateGarmentImageInput!) {
+    createGarmentImage(garmentImageData: $garmentImageData) {
       ... on GarmentImage {
         id
         url

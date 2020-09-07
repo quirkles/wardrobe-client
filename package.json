@@ -22,6 +22,7 @@
     "@types/faker": "^4.1.12",
     "@types/jsonwebtoken": "^8.5.0",
     "@types/ramda": "^0.27.7",
+    "@types/uuid": "^8.3.0",
     "apollo-cache-inmemory": "^1.6.6",
     "apollo-client": "^2.6.10",
     "aws-sdk": "^2.742.0",
@@ -34,8 +35,10 @@
     "nuxt": "^2.13.0",
     "nuxt-typed-vuex": "^0.1.19",
     "ramda": "^0.27.0",
+    "rxjs": "^6.6.3",
     "sass-loader": "^8.0.2",
-    "typed-vuex": "^0.1.19"
+    "typed-vuex": "^0.1.19",
+    "uuid": "^8.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.10.5",

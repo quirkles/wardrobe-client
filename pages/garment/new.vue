@@ -4,6 +4,9 @@
       <div class="column is-full">
         <h1 class="is-size-1">Create Garment</h1>
       </div>
+      <div class="column is-full">
+        <nuxt-link to="/garment/list">My garments</nuxt-link>
+      </div>
       <div class="column is-full-mobile is-half-desktop">
         <div class="content">
           <b-field label="Title">
@@ -76,7 +79,7 @@
         </div>
       </div>
       <div class="column is-full-mobile is-half-desktop">
-        <image-grid />
+        <image-grid :images="garmentImages" @fileChange="onImageSelect" />
       </div>
     </div>
   </div>
@@ -84,10 +87,12 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import { ManagedUpload } from 'aws-sdk/clients/s3'
 import { CREATE_GARMENT_DATA } from '~/queries/createGarmentData'
 import {
   Brand,
   Color,
+  CreateGarmentImageInput,
   Garment,
   GarmentCategory,
   GarmentImage,
@@ -97,6 +102,9 @@ import { SearchSelectItem } from '~/components/searchSelect/searchSelectTypes'
 import { CREATE_GARMENT } from '~/queries/createGarment'
 import { SEARCH_BRANDS } from '~/queries/findBrands'
 import { SEARCH_COLORS } from '~/queries/findColors'
+import { doUpload } from '~/utils/aws'
+import { CREATE_GARMENT_IMAGE } from '~/queries/createGarmentImage'
+import { UPDATE_GARMENT } from '~/queries/updateGarment'
 
 interface DataType {
   categories: GarmentCategory[]
@@ -106,11 +114,16 @@ interface DataType {
   selectedColorData: SearchSelectItem
   selectedCategoryId: string | null
   selectedSubCategoryId: string | null
-  images: GarmentImage[]
+  garmentImages: GarmentImage[]
 }
 
 export default Vue.extend({
   middleware: 'loggedIn',
+  created() {
+    this.$eventBus.subscribe('garment-created', (garment) => {
+      console.log('garment created, bus notified', garment) //eslint-disable-line
+    })
+  },
   async asyncData(ctx): Promise<void | Partial<DataType>> {
     try {
       const response = await ctx?.app?.apolloProvider?.defaultClient?.query({
@@ -131,11 +144,11 @@ export default Vue.extend({
       selectedCategoryId: null,
       selectedSubCategoryId: null,
       garmentId: null,
-      images: [],
+      garmentImages: [],
       categories: [] as GarmentCategory[],
       garmentData: {} as Garment,
       selectedBrandData: {} as SearchSelectItem,
-      selectedColorData: {} as SearchSelectItem
+      selectedColorData: {} as SearchSelectItem,
     }
   },
   computed: {
@@ -150,7 +163,35 @@ export default Vue.extend({
     },
   },
   methods: {
-    async doSaveGarment() {
+    doSaveGarment() {
+      if (this.garmentId) {
+        this.editGarment()
+      } else {
+        this.createGarment()
+      }
+    },
+    async editGarment() {
+      const userId = this.$accessor.sessionUser.id
+      const { title, description } = this.garmentData as Garment
+      const garmentData = {
+        garmentId: this.garmentId,
+        title,
+        description,
+        ownerId: userId,
+        brandId: this.selectedBrandData?.value,
+        colorId: this.selectedColorData?.value,
+        subCategoryId: this.selectedSubCategoryId,
+        garmentImageIds: this.garmentImages.map(({ id }) => id),
+      }
+      const createGarmentResponse = await this.$apollo.mutate({
+        mutation: UPDATE_GARMENT,
+        variables: {
+          garmentData,
+        },
+      })
+      this.garmentId = createGarmentResponse.data.createGarment.id
+    },
+    async createGarment() {
       const userId = this.$accessor.sessionUser.id
       const { title, description } = this.garmentData as Garment
       const garmentData = {
@@ -160,13 +201,19 @@ export default Vue.extend({
         brandId: this.selectedBrandData?.value,
         colorId: this.selectedColorData?.value,
         subCategoryId: this.selectedSubCategoryId,
+        garmentImageIds: this.garmentImages.map(({ id }) => id),
       }
-      await this.$apollo.mutate({
+      const createGarmentResponse = await this.$apollo.mutate({
         mutation: CREATE_GARMENT,
         variables: {
           garmentData,
         },
       })
+      this.garmentId = createGarmentResponse.data.createGarment.id
+      this.$eventBus.publish(
+        'garment-created',
+        createGarmentResponse.data.createGarment
+      )
     },
     handleFieldChange(field: string, value: string): void {
       this.$set(this.garmentData as Garment, field, value)
@@ -208,6 +255,32 @@ export default Vue.extend({
     },
     onColorSelect(selectedColor: SearchSelectItem): void {
       this.selectedColorData = selectedColor
+    },
+    async onImageSelect(imageFiles: File[]): Promise<void> {
+      const awsResponses = await Promise.all(
+        imageFiles.map(async (file) => await doUpload(file))
+      )
+      const gqlResults = await Promise.all(
+        await awsResponses.map((awsResult: ManagedUpload.SendData) =>
+          this.$apollo.mutate({
+            mutation: CREATE_GARMENT_IMAGE,
+            variables: {
+              garmentImageData: {
+                imageName: awsResult.Key,
+                imageUrl: awsResult.Location,
+              } as CreateGarmentImageInput,
+            },
+          })
+        )
+      )
+      gqlResults.forEach((gqlResult) => {
+        const imageData = gqlResult.data.createGarmentImage
+        this.garmentImages.push({
+          id: imageData.id,
+          url: imageData.url,
+          name: imageData.name,
+        })
+      })
     },
   },
 })

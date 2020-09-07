@@ -40,7 +40,7 @@ export type CreateGarmentInput = {
   brandId: Scalars['String'];
   colorId: Scalars['String'];
   subCategoryId: Scalars['String'];
-  imageUrls?: Maybe<Array<Scalars['String']>>;
+  garmentImageIds?: Maybe<Array<Scalars['String']>>;
 };
 
 export type CreateGarmentResult = Garment | InvalidSubcategoryError | InvalidBrandError | InvalidColorError | InvalidOwnerError | UnauthorizedError | FallBackServerError;
@@ -105,6 +105,16 @@ export type GarmentImage = {
   garment?: Maybe<Garment>;
 };
 
+export type GarmentNotFoundError = {
+  __typename?: 'GarmentNotFoundError';
+  type: Scalars['String'];
+  reason: Scalars['String'];
+  message: Scalars['String'];
+  responseType: Scalars['String'];
+};
+
+export type GarmentResult = Garment | GarmentNotFoundError | FallBackServerError;
+
 export type GarmentSubCategory = {
   __typename?: 'GarmentSubCategory';
   id: Scalars['ID'];
@@ -164,7 +174,7 @@ export type Mutation = {
 
 
 export type MutationCreateGarmentArgs = {
-  input: CreateGarmentInput;
+  garmentData: CreateGarmentInput;
 };
 
 
@@ -185,12 +195,12 @@ export type MutationLoginUserArgs = {
 
 
 export type MutationCreateGarmentImageArgs = {
-  input: CreateGarmentImageInput;
+  garmentImageData: CreateGarmentImageInput;
 };
 
 export type Query = {
   __typename?: 'Query';
-  getGarmentById: Garment;
+  getGarmentById: GarmentResult;
   getUserById: GetUserByIdResult;
   getBrands: Array<Brand>;
   getCategories: Array<GarmentCategory>;
@@ -274,6 +284,21 @@ export type UserNotFoundError = {
       const result: IntrospectionResultData = {
   "__schema": {
     "types": [
+      {
+        "kind": "UNION",
+        "name": "GarmentResult",
+        "possibleTypes": [
+          {
+            "name": "Garment"
+          },
+          {
+            "name": "GarmentNotFoundError"
+          },
+          {
+            "name": "FallBackServerError"
+          }
+        ]
+      },
       {
         "kind": "UNION",
         "name": "GetUserByIdResult",

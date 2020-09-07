@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 export default {
   /*
    ** Nuxt rendering mode
@@ -41,7 +43,7 @@ export default {
    ** Plugins to load before mounting the App
    ** https://nuxtjs.org/guide/plugins
    */
-  plugins: ['~plugins/buefy.ts'],
+  plugins: ['~plugins/buefy.ts', '~plugins/eventBus.ts'],
   /*
    ** Auto import components
    ** See https://nuxtjs.org/api/configuration-components
@@ -72,7 +74,7 @@ export default {
     },
   },
   styleResources: {
-    scss: ['./assets/styles/variables.scss', './assets/styles/_mixins.scss'],
+    scss: ['./assets/styles/main.scss'],
   },
   fontawesome: {
     icons: {
@@ -90,5 +92,10 @@ export default {
         redirect: '/login',
       })
     },
+  },
+  env: {
+    AWS_BUCKET_NAME: process.env.AWS_BUCKET_NAME,
+    AWS_BUCKET_REGION: process.env.AWS_BUCKET_REGION,
+    AWS_IDENTITY_POOL_ID: process.env.AWS_IDENTITY_POOL_ID,
   },
 }

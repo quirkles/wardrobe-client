@@ -1,5 +1,6 @@
 import AWS from 'aws-sdk'
 import { ManagedUpload } from 'aws-sdk/clients/s3'
+import { v4 as uuidv4 } from 'uuid';
 
 const bucketName = process.env.AWS_BUCKET_NAME as string
 const bucketRegion = process.env.AWS_BUCKET_REGION
@@ -13,11 +14,10 @@ AWS.config.update({
 })
 
 export const doUpload = (file: File): Promise<ManagedUpload.SendData> => {
-  const fileName = file.name
   const upload = new AWS.S3.ManagedUpload({
     params: {
       Bucket: bucketName,
-      Key: fileName,
+      Key: uuidv4(),
       Body: file,
       ACL: 'public-read',
     },
