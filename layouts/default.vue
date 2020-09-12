@@ -1,11 +1,18 @@
 <template>
   <div>
     <nuxt />
+    <notifications />
   </div>
 </template>
 
 <script>
-export default {}
+import Notifications from '~/components/notifications/Notifications.vue'
+
+export default {
+  components: {
+    notifications: Notifications,
+  },
+}
 </script>
 
 <style lang="scss">

@@ -119,11 +119,6 @@ interface DataType {
 
 export default Vue.extend({
   middleware: 'loggedIn',
-  created() {
-    this.$eventBus.subscribe('garment-created', (garment) => {
-      console.log('garment created, bus notified', garment) //eslint-disable-line
-    })
-  },
   async asyncData(ctx): Promise<void | Partial<DataType>> {
     try {
       const response = await ctx?.app?.apolloProvider?.defaultClient?.query({
@@ -152,6 +147,9 @@ export default Vue.extend({
     }
   },
   computed: {
+    canSaveGarment(): boolean {
+      return false
+    },
     subcategories(): GarmentSubCategory[] {
       return (
         (
@@ -164,10 +162,17 @@ export default Vue.extend({
   },
   methods: {
     doSaveGarment() {
-      if (this.garmentId) {
-        this.editGarment()
+      if (this.canSaveGarment) {
+        if (this.garmentId) {
+          this.editGarment()
+        } else {
+          this.createGarment()
+        }
       } else {
-        this.createGarment()
+        this.$eventBus.publish('notification', {
+          type: 'danger',
+          content: `Can't save garment!`,
+        })
       }
     },
     async editGarment() {
@@ -210,10 +215,10 @@ export default Vue.extend({
         },
       })
       this.garmentId = createGarmentResponse.data.createGarment.id
-      this.$eventBus.publish(
-        'garment-created',
-        createGarmentResponse.data.createGarment
-      )
+      this.$eventBus.publish('notification', {
+        type: 'success',
+        content: `Garment created!`,
+      })
     },
     handleFieldChange(field: string, value: string): void {
       this.$set(this.garmentData as Garment, field, value)

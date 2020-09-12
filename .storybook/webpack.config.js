@@ -4,30 +4,19 @@ const webpack = require('webpack');
 require('dotenv').config()
 
 module.exports = async ({ config }) => {
-  // config.target = 'node'
-  function resolve(dir) {
-    return path.join(__dirname, '..', dir);
-  }
-
-  /** removes existing scss rule */
   config.module.rules = config.module.rules.filter(rule =>
     !rule.test.test('.scss')
   )
-  config.module.rules.push({
-    test: /\.s[ca]ss$/,
+  config.module.rules.push( {
+    test: /\.s[ac]ss$/i,
     use: [
-      'vue-style-loader',
-      'css-loader', {
-        loader: 'sass-loader',
-      },
+      // Creates `style` nodes from JS strings
+      'style-loader',
+      // Translates CSS into CommonJS
+      'css-loader',
+      // Compiles Sass to CSS
+      'sass-loader',
     ],
-    resolve: {
-      alias: {
-        // figure out which one of these is needed
-        '~assets': `${path.dirname(path.resolve(__dirname))}/assets`,
-        'assets': `${path.dirname(path.resolve(__dirname))}/assets`
-      }
-    }
   })
 
   config.module.rules.push({
@@ -43,13 +32,23 @@ module.exports = async ({ config }) => {
       }
     ],
   });
+  config.module.rules.push({
+    test: /\.(png|jpe?g|gif)$/i,
+    use: [
+      {
+        loader: 'file-loader',
+      },
+    ],
+  });
 
   config.resolve = {
     extensions: ['.js', '.ts', '.vue', '.json'],
     alias: {
       vue$: 'vue/dist/vue.esm.js',
       '@': path.dirname(path.resolve(__dirname)),
-      '~': path.dirname(path.resolve(__dirname))
+      '~': path.dirname(path.resolve(__dirname)),
+      '~assets': path.join(path.dirname(path.resolve(__dirname)), 'assets'),
+      'assets': path.join(path.dirname(path.resolve(__dirname)), 'assets'),
     },
   };
 

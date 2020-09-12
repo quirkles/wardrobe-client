@@ -8,12 +8,8 @@
         class="column is-one-quarter-desktop is-full-mobile"
       >
         <nuxt-link to="/garment/new">
-          <div class="is-size-2 is-bold">
-            +
-          </div>
-          <div>
-            Add Garment
-          </div>
+          <div class="is-size-2 is-bold">+</div>
+          <div>Add Garment</div>
         </nuxt-link>
       </div>
     </div>

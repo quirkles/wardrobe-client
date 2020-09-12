@@ -1,14 +1,36 @@
+// color pallette from https://undercoverism.com/collections/detail.php?id=868
+
 // Import theme overrides
 @import './theme/theme';
 
 $family-sans-serif: "IBM Plex Mono", "BlinkMacSystemFont", "-apple-system", "Segoe UI", "sans-serif";
 
-$indian-red: #BC5850;
+// Colors
+$black:        hsl(0, 0%, 4%) !default
+$black-bis:    hsl(0, 0%, 7%) !default
+$black-ter:    hsl(0, 0%, 14%) !default
 
-$custom-colors: (
-  "indian-red"  : ($indian-red, findColorInvert($indian-red)),
-);
+$grey-darker:  hsl(0, 0%, 21%) !default
+$grey-dark:    hsl(0, 0%, 29%) !default
+$grey:         hsl(0, 0%, 48%) !default
+$grey-light:   hsl(0, 0%, 71%) !default
+$grey-lighter: hsl(0, 0%, 86%) !default
+$grey-lightest: hsl(0, 0%, 93%) !default
 
+$white-ter:    hsl(0, 0%, 96%) !default
+$white-bis:    hsl(0, 0%, 98%) !default
+$white:        hsl(0, 0%, 100%) !default
+
+$orange:       hsl(14,56%,50%) !default
+$yellow:       hsl(48, 66%, 57%) !default
+$green:        hsl(149, 26%, 49%) !default
+$cyan:         hsl(193, 20%, 52%) !default
+$blue:         hsl(222,40%,53%) !default
+$purple:       hsl(271, 100%, 71%) !default
+$red: #BC5850;
+
+
+$primary: $purple;
 
 // Import buefy and bulma styles
 @import "~bulma/bulma";

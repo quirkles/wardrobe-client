@@ -1,10 +1,14 @@
 import { Subject, Unsubscribable } from 'rxjs'
 
 import { Plugin } from '@nuxt/types'
+import { v4 as uuid } from 'uuid'
 
-interface Payload {
-  payload: any
+export interface AppNotification {
+  type: 'warning' | 'info' | 'danger' | 'success'
+  content: string
 }
+
+export type Payload = AppNotification
 
 interface EventBus {
   subscribe(
@@ -14,14 +18,14 @@ interface EventBus {
   publish(topic: string, payload: Payload): void
 }
 
-const createEventBus = (): EventBus => {
+export const createEventBus = (): EventBus => {
+  const busId = uuid()
   const listeners: { [topic: string]: Subject<Payload> } = {}
   return {
     subscribe(
       topic: string,
       handler: (eventPayload: Payload) => any
     ): Unsubscribable {
-      console.log(`subscribing to event: ${topic}`) //eslint-disable-line
       let listener = listeners[topic]
       if (listener == null) {
         listener = new Subject()
