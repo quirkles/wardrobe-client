@@ -1,4 +1,4 @@
-schema: http://localhost:4000/graphql
+schema: ${GQL_SCHEMA_ENDPOINT}
 overwrite: true
 generates:
   ./fragmentTypes.ts:

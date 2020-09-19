@@ -1,4 +1,9 @@
-require('dotenv').config()
+// eslint-disable-next-line nuxt/no-cjs-in-config
+const path = require('path')
+const env = process.env.APP_ENV || 'local'
+
+const envPath = path.resolve(process.cwd(), `.${env}.env`)
+require('dotenv').config({ path: envPath })
 
 export default {
   /*
@@ -97,5 +102,6 @@ export default {
     AWS_BUCKET_NAME: process.env.AWS_BUCKET_NAME,
     AWS_BUCKET_REGION: process.env.AWS_BUCKET_REGION,
     AWS_IDENTITY_POOL_ID: process.env.AWS_IDENTITY_POOL_ID,
+    GQL_SCHEMA_ENDPOINT: process.env.GQL_SCHEMA_ENDPOINT,
   },
 }

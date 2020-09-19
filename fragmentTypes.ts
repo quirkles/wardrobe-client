@@ -165,11 +165,16 @@ export type LoginUserResult = UserAndToken | UserNotFoundError | FallBackServerE
 
 export type Mutation = {
   __typename?: 'Mutation';
+  createGarmentImage: CreateGarmentImageResult;
   createGarment: CreateGarmentResult;
   updateGarment: UpdateGarmentResult;
   createUser: CreateUserResult;
   loginUser: LoginUserResult;
-  createGarmentImage: CreateGarmentImageResult;
+};
+
+
+export type MutationCreateGarmentImageArgs = {
+  garmentImageData: CreateGarmentImageInput;
 };
 
 
@@ -193,28 +198,14 @@ export type MutationLoginUserArgs = {
   email: Scalars['String'];
 };
 
-
-export type MutationCreateGarmentImageArgs = {
-  garmentImageData: CreateGarmentImageInput;
-};
-
 export type Query = {
   __typename?: 'Query';
-  getGarmentById: GarmentResult;
-  getUserById: GetUserByIdResult;
   getBrands: Array<Brand>;
   getCategories: Array<GarmentCategory>;
   getColors: Array<Color>;
-};
-
-
-export type QueryGetGarmentByIdArgs = {
-  garmentId: Scalars['String'];
-};
-
-
-export type QueryGetUserByIdArgs = {
-  userId: Scalars['String'];
+  getGarmentById: GarmentResult;
+  getUserById: GetUserByIdResult;
+  healthCheck: Scalars['String'];
 };
 
 
@@ -227,6 +218,16 @@ export type QueryGetColorsArgs = {
   query: Scalars['String'];
 };
 
+
+export type QueryGetGarmentByIdArgs = {
+  garmentId: Scalars['String'];
+};
+
+
+export type QueryGetUserByIdArgs = {
+  userId: Scalars['String'];
+};
+
 export type UnauthorizedError = {
   __typename?: 'UnauthorizedError';
   responseType: Scalars['String'];
@@ -236,13 +237,14 @@ export type UnauthorizedError = {
 };
 
 export type UpdateGarmentInput = {
+  ownerId: Scalars['String'];
+  title: Scalars['String'];
+  description: Scalars['String'];
+  brandId: Scalars['String'];
+  colorId: Scalars['String'];
+  subCategoryId: Scalars['String'];
+  garmentImageIds?: Maybe<Array<Scalars['String']>>;
   garmentId: Scalars['String'];
-  title?: Maybe<Scalars['String']>;
-  description?: Maybe<Scalars['String']>;
-  brandId?: Maybe<Scalars['String']>;
-  colorId?: Maybe<Scalars['String']>;
-  subCategoryId?: Maybe<Scalars['String']>;
-  imageUrls?: Maybe<Array<Scalars['String']>>;
 };
 
 export type UpdateGarmentResult = Garment | InvalidSubcategoryError | InvalidGarmentError | InvalidBrandError | InvalidColorError | InvalidOwnerError | UnauthorizedError | FallBackServerError;
@@ -308,6 +310,24 @@ export type UserNotFoundError = {
           },
           {
             "name": "UserNotFoundError"
+          }
+        ]
+      },
+      {
+        "kind": "UNION",
+        "name": "CreateGarmentImageResult",
+        "possibleTypes": [
+          {
+            "name": "GarmentImage"
+          },
+          {
+            "name": "InvalidGarmentError"
+          },
+          {
+            "name": "UnauthorizedError"
+          },
+          {
+            "name": "FallBackServerError"
           }
         ]
       },
@@ -392,24 +412,6 @@ export type UserNotFoundError = {
           },
           {
             "name": "UserNotFoundError"
-          },
-          {
-            "name": "FallBackServerError"
-          }
-        ]
-      },
-      {
-        "kind": "UNION",
-        "name": "CreateGarmentImageResult",
-        "possibleTypes": [
-          {
-            "name": "GarmentImage"
-          },
-          {
-            "name": "InvalidGarmentError"
-          },
-          {
-            "name": "UnauthorizedError"
           },
           {
             "name": "FallBackServerError"
