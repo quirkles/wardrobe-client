@@ -11,7 +11,15 @@ module.exports = {
     'plugin:prettier/recommended',
     'plugin:nuxt/recommended',
   ],
-  plugins: ['prettier'],
+  plugins: ['prettier', 'graphql'],
   // add your custom rules here
-  rules: {},
+  rules: {
+    'graphql/template-strings': [
+      'error',
+      {
+        env: 'apollo',
+        schemaJson: require('./schema.json'),
+      },
+    ],
+  },
 }

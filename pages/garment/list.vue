@@ -29,7 +29,6 @@ export default Vue.extend({
       const { garments = [] } = response?.data?.getUserById || {}
       return { garments }
     } catch (e) {
-      console.error(e)
       return {
         garments: [],
       }

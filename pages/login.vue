@@ -4,9 +4,7 @@
       <div class="column is-one-third-desktop">
         <div class="card mt-4">
           <header class="card-header">
-            <p class="card-header-title">
-              Log in
-            </p>
+            <p class="card-header-title">Log in</p>
           </header>
           <div class="card-content">
             <div class="content">

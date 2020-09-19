@@ -7,8 +7,8 @@
           multiple
           drag-drop
           expanded
-          @input="onFileChange"
           type="is-indian-red"
+          @input="onFileChange"
         >
           <section class="section">
             <div class="content has-text-centered">
@@ -42,17 +42,17 @@ interface DataType {
 }
 
 export default Vue.extend({
-  data(): DataType {
-    return {
-      fileModels: [],
-    }
-  },
   props: {
     images: {
       type: Array as PropType<GarmentImage[]>,
       required: false,
       default: () => [],
     },
+  },
+  data(): DataType {
+    return {
+      fileModels: [],
+    }
   },
   methods: {
     onFileChange(files: File[]): void {

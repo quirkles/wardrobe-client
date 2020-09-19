@@ -1,5 +1,6 @@
 schema: ${GQL_SCHEMA_ENDPOINT}
 overwrite: true
+documents: 'queries/*.ts'
 generates:
   ./fragmentTypes.ts:
     plugins:
