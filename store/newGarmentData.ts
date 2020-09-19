@@ -1,6 +1,6 @@
 import { actionTree, getterTree, mutationTree } from 'nuxt-typed-vuex'
 import Vue from 'vue'
-import { CreateGarmentInput } from '~/fragmentTypes'
+import { CreateGarmentInput } from '~/gqlSchemaTypes/globalTypes'
 
 export interface NewGarmentDataState {
   title: string | null

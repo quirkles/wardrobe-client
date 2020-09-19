@@ -51,7 +51,8 @@
 import Vue from 'vue'
 import { LOGIN } from '~/queries/login'
 import { Credentials } from '~/store/unauthenticatedUserCredentials'
-import { CreateUserInput, User } from '~/fragmentTypes'
+import { User } from '~/types/Garment'
+import { CreateUserInput } from '~/gqlSchemaTypes/globalTypes'
 
 export default Vue.extend({
   data() {

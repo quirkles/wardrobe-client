@@ -1,23 +1,19 @@
 import {
-  InMemoryCache,
   IntrospectionFragmentMatcher,
+  InMemoryCache,
 } from 'apollo-cache-inmemory'
-
-import introspectionQueryResultData from '../fragmentTypes.ts'
-
+import introspectionQueryResultData from '../fragmentTypes.json'
 const fragmentMatcher = new IntrospectionFragmentMatcher({
   introspectionQueryResultData,
 })
 
-const cache = new InMemoryCache({ fragmentMatcher })
-
 export default function (ctx) {
   return {
-    httpEndpoint: `http://localhost:4000/graphql`,
+    httpEndpoint: process.env.GQL_SCHEMA_ENDPOINT,
     getAuth: () => {
       const token = ctx?.app?.$apolloHelpers?.getToken()
       return token ? `Bearer ${token}` : null
     },
-    cache,
+    cache: new InMemoryCache({ fragmentMatcher }),
   }
 }

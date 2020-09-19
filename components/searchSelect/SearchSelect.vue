@@ -30,7 +30,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue'
-import { SearchSelectItem } from '~/components/searchSelect/searchSelectTypes'
+import { SearchSelectItem } from '~/types/SearchSelect'
 import { debounce } from '~/utils/debounce'
 import { VueRefEl } from '~/index'
 interface DataType {

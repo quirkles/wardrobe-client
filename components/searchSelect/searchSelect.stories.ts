@@ -1,6 +1,6 @@
 import faker from 'faker'
 
-import { SearchSelectItem } from '~/components/searchSelect/searchSelectTypes'
+import { SearchSelectItem } from '~/types/SearchSelect'
 
 faker.seed(1234)
 

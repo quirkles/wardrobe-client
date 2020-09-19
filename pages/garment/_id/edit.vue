@@ -72,7 +72,7 @@
         </div>
       </div>
       <div class="column is-full-mobile is-half-desktop">
-        <image-grid />
+        <image-grid :images="garmentImages" @fileChange="onImageSelect" />
       </div>
     </div>
   </div>
@@ -80,6 +80,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import { ManagedUpload } from 'aws-sdk/clients/s3'
 import {
   Brand,
   Color,
@@ -87,12 +88,15 @@ import {
   GarmentCategory,
   GarmentImage,
   GarmentSubCategory,
-} from '~/fragmentTypes'
+} from '~/types/Garment'
 import { UPDATE_GARMENT } from '~/queries/updateGarment'
-import { SearchSelectItem } from '~/components/searchSelect/searchSelectTypes'
+import { SearchSelectItem } from '~/types/SearchSelect'
 import { SEARCH_BRANDS } from '~/queries/findBrands'
 import { SEARCH_COLORS } from '~/queries/findColors'
 import { EDIT_GARMENT_DATA } from '~/queries/editGarmentData'
+import { doUpload } from '~/utils/aws'
+import { CREATE_GARMENT_IMAGE } from '~/queries/createGarmentImage'
+import { CreateGarmentImageInput } from '~/gqlSchemaTypes/globalTypes'
 
 interface DataType {
   categories: GarmentCategory[]
@@ -100,9 +104,9 @@ interface DataType {
   garmentData: Garment
   selectedBrandData: SearchSelectItem
   selectedColorData: SearchSelectItem
-  selectedCategoryId: string
-  selectedSubCategoryId: string
-  images: GarmentImage[]
+  selectedCategoryId: string | null
+  selectedSubCategoryId: string | null
+  garmentImages: GarmentImage[]
 }
 
 export default Vue.extend({
@@ -116,24 +120,22 @@ export default Vue.extend({
           garmentId: String(garmentId),
         },
       })
-      console.log(response) //eslint-disable-line
       const { garmentData, categories } = response?.data || {}
       const {
         brand: selectedBrand,
         color: selectedColor,
         category: selectedCategory,
         subCategory: selectedSubCategory,
-        images,
-      } = {
-        ...(garmentData as Garment),
-      }
+        images = [],
+      } = garmentData as Garment
+
       return {
         categories,
         garmentId,
         garmentData,
-        images,
-        selectedCategoryId: selectedCategory?.id,
-        selectedSubCategoryId: selectedSubCategory?.id,
+        garmentImages: images,
+        selectedCategoryId: selectedCategory?.id || null,
+        selectedSubCategoryId: selectedSubCategory?.id || null,
         selectedBrandData: {
           text: selectedBrand.name,
           value: selectedBrand.id,
@@ -148,25 +150,25 @@ export default Vue.extend({
       return {
         categories: [] as GarmentCategory[],
         garmentId,
-        images: [] as GarmentImage[],
+        garmentImages: [] as GarmentImage[],
         garmentData: {} as Garment,
         selectedBrandData: {} as SearchSelectItem,
         selectedColorData: {} as SearchSelectItem,
-        selectedCategoryId: '',
-        selectedSubCategoryId: '',
+        selectedCategoryId: null,
+        selectedSubCategoryId: null,
       }
     }
   },
   data(): DataType {
     return {
-      images: [],
-      categories: [],
-      garmentId: '',
+      selectedCategoryId: null,
+      selectedSubCategoryId: null,
+      garmentId: null,
+      garmentImages: [] as GarmentImage[],
+      categories: [] as GarmentCategory[],
       garmentData: {} as Garment,
       selectedBrandData: {} as SearchSelectItem,
       selectedColorData: {} as SearchSelectItem,
-      selectedCategoryId: '',
-      selectedSubCategoryId: '',
     }
   },
   computed: {
@@ -189,7 +191,7 @@ export default Vue.extend({
         garmentId: this.garmentId,
         brandId: this.selectedBrandData?.value || brand.id,
         colorId: this.selectedColorData?.value || color.id,
-        subCategoryId: this.selectedSubCategoryId || subCategory.id,
+        subCategoryId: this.selectedSubCategoryId || subCategory?.id || null,
       }
       await this.$apollo.mutate({
         mutation: UPDATE_GARMENT,
@@ -238,6 +240,33 @@ export default Vue.extend({
     },
     onColorSelect(selectedColor: SearchSelectItem): void {
       this.selectedColorData = selectedColor
+    },
+    async onImageSelect(imageFiles: File[]): Promise<void> {
+      const awsResponses = await Promise.all(
+        imageFiles.map(async (file) => await doUpload(file))
+      )
+      const gqlResults = await Promise.all(
+        await awsResponses.map((awsResult: ManagedUpload.SendData) =>
+          this.$apollo.mutate({
+            mutation: CREATE_GARMENT_IMAGE,
+            variables: {
+              garmentImageData: {
+                garmentId: this.garmentId,
+                imageName: awsResult.Key,
+                imageUrl: awsResult.Location,
+              } as CreateGarmentImageInput,
+            },
+          })
+        )
+      )
+      gqlResults.forEach((gqlResult) => {
+        const imageData = gqlResult.data.createGarmentImage
+        this.garmentImages.push({
+          id: imageData.id,
+          url: imageData.url,
+          name: imageData.name,
+        })
+      })
     },
   },
 })

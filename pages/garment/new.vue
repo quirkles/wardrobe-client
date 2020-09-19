@@ -92,19 +92,19 @@ import { CREATE_GARMENT_DATA } from '~/queries/createGarmentData'
 import {
   Brand,
   Color,
-  CreateGarmentImageInput,
   Garment,
   GarmentCategory,
   GarmentImage,
   GarmentSubCategory,
-} from '~/fragmentTypes'
-import { SearchSelectItem } from '~/components/searchSelect/searchSelectTypes'
+} from '~/types/Garment'
+import { SearchSelectItem } from '~/types/SearchSelect'
 import { CREATE_GARMENT } from '~/queries/createGarment'
 import { SEARCH_BRANDS } from '~/queries/findBrands'
 import { SEARCH_COLORS } from '~/queries/findColors'
 import { doUpload } from '~/utils/aws'
 import { CREATE_GARMENT_IMAGE } from '~/queries/createGarmentImage'
 import { UPDATE_GARMENT } from '~/queries/updateGarment'
+import { CreateGarmentImageInput } from '~/gqlSchemaTypes/globalTypes'
 
 interface DataType {
   categories: GarmentCategory[]

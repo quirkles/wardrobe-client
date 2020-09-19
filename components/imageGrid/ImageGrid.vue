@@ -35,7 +35,7 @@
 import Vue, { PropType } from 'vue'
 
 import { File } from './imageGridTypes'
-import { GarmentImage } from '~/fragmentTypes'
+import { GarmentImage } from '~/types/Garment'
 
 interface DataType {
   fileModels: File[]

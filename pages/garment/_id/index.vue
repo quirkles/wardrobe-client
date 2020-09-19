@@ -6,7 +6,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { Garment } from '~/fragmentTypes'
+import { Garment } from '~/types/Garment'
 
 export default Vue.extend({
   data() {

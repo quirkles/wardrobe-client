@@ -19,7 +19,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import { GET_GARMENTS_FOR_USER } from '~/queries/getGarmentsForUser'
-import { Garment } from '~/fragmentTypes'
+import { Garment } from '~/types/Garment'
 
 export default Vue.extend({
   middleware: 'loggedIn',

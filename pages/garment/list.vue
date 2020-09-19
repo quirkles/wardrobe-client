@@ -12,7 +12,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { Garment } from '~/fragmentTypes'
+import { Garment } from '~/types/Garment'
 import { GET_GARMENTS_FOR_USER } from '~/queries/getGarmentsForUser'
 
 export default Vue.extend({

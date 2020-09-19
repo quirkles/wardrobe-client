@@ -28,7 +28,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue'
-import { Garment } from '~/fragmentTypes'
+import { Garment } from '~/types/Garment'
 export default Vue.extend({
   props: {
     garmentData: {

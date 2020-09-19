@@ -1,7 +1,8 @@
 import Vue from 'vue'
 
 import { ManagedUpload } from 'aws-sdk/clients/s3'
-import { CreateGarmentImageInput, GarmentImage } from '~/fragmentTypes'
+import { CreateGarmentImageInput } from '~/gqlSchemaTypes/globalTypes'
+import { GarmentImage } from '~/types/Garment'
 
 export default { title: 'ImageGrid' }
 
@@ -15,7 +16,7 @@ const fakeDoUpload = (file: File): Promise<Partial<ManagedUpload.SendData>> => {
 
 const fakeMutation = (
   input: CreateGarmentImageInput
-): Promise<GarmentImage> => {
+): Promise<Partial<GarmentImage>> => {
   return Promise.resolve({
     name: input.imageName,
     url: input.imageUrl,
@@ -25,7 +26,7 @@ const fakeMutation = (
 
 interface DataType {
   fileList: File[]
-  images: GarmentImage[]
+  images: Partial<GarmentImage>[]
 }
 
 export const withImages = () => {
@@ -52,9 +53,9 @@ export const withImages = () => {
         )
         gqlResults.forEach((gqlResult) =>
           this.images.push({
-            id: gqlResult.id,
-            url: gqlResult.url,
-            name: gqlResult.name,
+            id: gqlResult.id as string,
+            url: gqlResult.url as string,
+            name: gqlResult.name as string,
           })
         )
       },
