@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "nuxt",
     "build": "nuxt-ts build",
-    "heroku-postbuild": "npm run downloadSchemaGraphql && npm run generateFragmentTypes && nuxt-ts build",
+    "heroku-postbuild": "npm run downloadSchemaGraphql && npm run generateTypesFromQueries && npm run generateFragmentTypes && nuxt-ts build",
     "downloadSchemaJson": "apollo client:download-schema gqlSchema.json --config=apollo.config.js",
     "downloadSchemaGraphql": "apollo client:download-schema gqlSchema.graphql --config=apollo.config.js",
     "generateTypesFromQueries": "apollo client:codegen gqlSchemaTypes --target=typescript --includes='./queries/*.ts' --config=apollo.config.js",
