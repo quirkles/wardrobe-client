@@ -128,7 +128,6 @@ export default Vue.extend({
         subCategory: selectedSubCategory,
         images = [],
       } = garmentData as Garment
-
       return {
         categories,
         garmentId,
@@ -164,7 +163,7 @@ export default Vue.extend({
       selectedCategoryId: null,
       selectedSubCategoryId: null,
       garmentId: null,
-      garmentImages: [] as GarmentImage[],
+      garmentImages: [],
       categories: [] as GarmentCategory[],
       garmentData: {} as Garment,
       selectedBrandData: {} as SearchSelectItem,

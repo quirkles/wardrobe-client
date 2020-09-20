@@ -1,5 +1,9 @@
 import config from './config'
 
+// temporary fix for https://github.com/buefy/nuxt-buefy/issues/72
+global.HTMLImageElement =
+  typeof window === 'undefined' ? Object : window.HTMLImageElement
+
 const {
   AWS_BUCKET_NAME,
   AWS_BUCKET_REGION,
@@ -8,11 +12,6 @@ const {
 } = config
 
 export default {
-  /*
-   ** Nuxt rendering mode
-   ** See https://nuxtjs.org/api/configuration-mode
-   */
-  mode: 'universal',
   /*
    ** Nuxt target
    ** See https://nuxtjs.org/api/configuration-target
@@ -59,11 +58,7 @@ export default {
   /*
    ** Nuxt.js dev-modules
    */
-  buildModules: [
-    '@nuxt/typescript-build',
-    'nuxt-typed-vuex',
-    '@nuxtjs/fontawesome',
-  ],
+  buildModules: ['@nuxt/typescript-build', 'nuxt-typed-vuex'],
   /*
    ** Nuxt.js modules
    */

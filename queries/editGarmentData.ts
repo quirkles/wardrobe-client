@@ -24,6 +24,7 @@ export const EDIT_GARMENT_DATA = gql`
           slug
         }
         images {
+          id
           url
         }
       }
