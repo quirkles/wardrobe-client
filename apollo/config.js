@@ -15,5 +15,8 @@ export default function (ctx) {
       return token ? `Bearer ${token}` : null
     },
     cache: new InMemoryCache({ fragmentMatcher }),
+    fetchOptions: {
+      mode: 'no-cors',
+    },
   }
 }
