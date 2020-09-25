@@ -1,6 +1,5 @@
 const path = require('path')
 const fs = require('fs')
-
 const dotenv = require('dotenv')
 
 // Set the env from APP_ENV and fall back to local

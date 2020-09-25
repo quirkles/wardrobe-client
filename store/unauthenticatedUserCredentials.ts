@@ -1,13 +1,12 @@
 import Vue from 'vue'
+import { isEmpty } from 'ramda'
 import { actionTree, getterTree, mutationTree } from 'nuxt-typed-vuex'
-
-const mustMatch = (
-  a: string | number,
-  b: string | number,
-  message: string
-): null | string => (a === b ? null : message)
-
-const stripNulls = (val: string | null): val is string => !!val
+import {
+  createValidator,
+  fieldRequired,
+  fieldMatchesEmailRegex,
+  mustMatchField,
+} from '~/utils/validations'
 
 export interface UnauthenticatedUserCredentialsState {
   firstName: string
@@ -28,6 +27,26 @@ interface UpdateFieldPayload {
   value: string
 }
 
+const mustMatchPassword = mustMatchField('password')
+const passwordConfirmMatchesPassword = mustMatchPassword('passwordConfirm')
+
+const emailIsValid = fieldMatchesEmailRegex('email')
+const emailRequired = fieldRequired('email')
+const passwordRequired = fieldRequired('password')
+
+const loginValidator = createValidator([
+  emailRequired,
+  emailIsValid,
+  passwordRequired,
+])
+
+const signupValidator = createValidator([
+  emailRequired,
+  emailIsValid,
+  passwordRequired,
+  passwordConfirmMatchesPassword,
+])
+
 export const state = (): UnauthenticatedUserCredentialsState => ({
   firstName: '',
   lastName: '',
@@ -38,61 +57,21 @@ export const state = (): UnauthenticatedUserCredentialsState => ({
 })
 
 export const getters = getterTree(state, {
-  isSignupValid: (state: UnauthenticatedUserCredentialsState): boolean => {
-    const passwordsMatch = state.password === state.passwordConfirm
-    const emailTaken = state.knownTakenEmails.includes(state.email)
-    if (!passwordsMatch || emailTaken) {
-      return false
-    }
-    return true
+  isSignupValid: (_: UnauthenticatedUserCredentialsState, getters): boolean => {
+    return isEmpty(getters.signupErrors)
   },
-  isLoginValid: (state: UnauthenticatedUserCredentialsState): boolean => {
-    return !!(state.email.length && state.password.length)
+  isLoginValid: (_: UnauthenticatedUserCredentialsState, getters): boolean => {
+    return isEmpty(getters.loginErrors)
   },
   signupErrors: (
     state: UnauthenticatedUserCredentialsState
   ): { [field: string]: string[] } => {
-    return {
-      email: [
-        state.knownTakenEmails.includes(state.email)
-          ? 'Email address already taken'
-          : null,
-      ].filter(stripNulls),
-      password: [
-        mustMatch(
-          state.password,
-          state.passwordConfirm,
-          'Password and confirm password do not match'
-        ),
-      ].filter(stripNulls),
-      passwordConfirm: [
-        mustMatch(
-          state.password,
-          state.passwordConfirm,
-          'Password and confirm password do not match'
-        ),
-      ].filter(stripNulls),
-    }
+    return signupValidator(state)
   },
   loginErrors: (
     state: UnauthenticatedUserCredentialsState
   ): { [field: string]: string[] } => {
-    return {
-      password: [
-        mustMatch(
-          state.password,
-          state.passwordConfirm,
-          'Password and confirm password do not match'
-        ),
-      ].filter(stripNulls),
-      passwordConfirm: [
-        mustMatch(
-          state.password,
-          state.passwordConfirm,
-          'Password and confirm password do not match'
-        ),
-      ].filter(stripNulls),
-    }
+    return loginValidator(state)
   },
   creds: (state: UnauthenticatedUserCredentialsState): Credentials => ({
     firstName: state.firstName,

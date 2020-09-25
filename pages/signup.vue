@@ -11,6 +11,7 @@
               <b-field label="Email" :message="errors.email">
                 <b-input
                   v-model="credentials.email"
+                  required
                   type="email"
                   @input="handleFieldChange('email', $event)"
                 ></b-input>
@@ -18,6 +19,7 @@
               <b-field label="Password" :message="errors.password">
                 <b-input
                   v-model="credentials.password"
+                  required
                   type="password"
                   @input="handleFieldChange('password', $event)"
                 ></b-input>

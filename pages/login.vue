@@ -8,12 +8,6 @@
           </header>
           <div class="card-content">
             <div class="content">
-              <div
-                v-if="isShowingNotFoundError"
-                class="py-2 has-text-indian-red"
-              >
-                No user found with those credentials
-              </div>
               <b-field label="Email" :message="errors.email">
                 <b-input
                   v-model="credentials.email"
@@ -21,7 +15,7 @@
                   @input="handleFieldChange('email', $event)"
                 ></b-input>
               </b-field>
-              <b-field label="Password">
+              <b-field label="Password" :message="errors.password">
                 <b-input
                   v-model="credentials.password"
                   type="password"
