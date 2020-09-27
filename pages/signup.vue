@@ -8,7 +8,13 @@
           </header>
           <div class="card-content">
             <div class="content">
-              <b-field label="Email" :message="errors.email">
+              <b-field
+                label="Email"
+                :message="hasAttemptedSubmit && errors.email"
+                :type="
+                  hasAttemptedSubmit && errors.email ? 'is-danger' : 'is-info'
+                "
+              >
                 <b-input
                   v-model="credentials.email"
                   required
@@ -16,7 +22,15 @@
                   @input="handleFieldChange('email', $event)"
                 ></b-input>
               </b-field>
-              <b-field label="Password" :message="errors.password">
+              <b-field
+                label="Password"
+                :message="hasAttemptedSubmit && errors.password"
+                :type="
+                  hasAttemptedSubmit && errors.password
+                    ? 'is-danger'
+                    : 'is-info'
+                "
+              >
                 <b-input
                   v-model="credentials.password"
                   required
@@ -26,7 +40,12 @@
               </b-field>
               <b-field
                 label="Confirm Password"
-                :message="errors.passwordConfirm"
+                :message="hasAttemptedSubmit && errors.passwordConfirm"
+                :type="
+                  hasAttemptedSubmit && errors.passwordConfirm
+                    ? 'is-danger'
+                    : 'is-info'
+                "
               >
                 <b-input
                   v-model="credentials.passwordConfirm"

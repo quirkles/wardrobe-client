@@ -28,11 +28,19 @@ interface UpdateFieldPayload {
 }
 
 const mustMatchPassword = mustMatchField('password')
-const passwordConfirmMatchesPassword = mustMatchPassword('passwordConfirm')
+const passwordConfirmMatchesPassword = mustMatchPassword(
+  'passwordConfirm',
+  'Password and confirm password must match.'
+)
 
 const emailIsValid = fieldMatchesEmailRegex('email')
 const emailRequired = fieldRequired('email')
 const passwordRequired = fieldRequired('password')
+
+const emailNotTaken = ({ knownTakenEmails, email }: { [field: string]: any }) =>
+  (knownTakenEmails || []).includes(email || '')
+    ? ['email', 'This email is already taken']
+    : null
 
 const loginValidator = createValidator([
   emailRequired,
@@ -45,6 +53,7 @@ const signupValidator = createValidator([
   emailIsValid,
   passwordRequired,
   passwordConfirmMatchesPassword,
+  emailNotTaken,
 ])
 
 export const state = (): UnauthenticatedUserCredentialsState => ({
@@ -53,7 +62,7 @@ export const state = (): UnauthenticatedUserCredentialsState => ({
   email: '',
   password: '',
   passwordConfirm: '',
-  knownTakenEmails: [],
+  knownTakenEmails: ['mail@mail.com'],
 })
 
 export const getters = getterTree(state, {
