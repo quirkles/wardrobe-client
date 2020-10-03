@@ -10,6 +10,15 @@ export const SIGNUP = gql`
         }
         token
       }
+      ... on ValidationError {
+        reason
+        message
+        errors {
+          field
+          errors
+          constraints
+        }
+      }
       ... on DuplicateUserError {
         reason
       }
