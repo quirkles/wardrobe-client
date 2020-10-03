@@ -4,15 +4,15 @@
       <div class="column is-one-third-desktop">
         <div class="card">
           <header class="card-header">
-            <p class="card-header-title">Sign Up</p>
+            <h1 class="card-header-title is-size-3 has-text-info">Sign Up</h1>
           </header>
           <div class="card-content">
             <div class="content">
               <b-field
                 label="Email"
-                :message="hasAttemptedSubmit && errors.email"
+                :message="(hasAttemptedSubmit && errors.email) || []"
                 :type="
-                  hasAttemptedSubmit && errors.email ? 'is-danger' : 'is-info'
+                  hasAttemptedSubmit && errors.email ? 'is-danger' : undefined
                 "
               >
                 <b-input
@@ -24,11 +24,11 @@
               </b-field>
               <b-field
                 label="Password"
-                :message="hasAttemptedSubmit && errors.password"
+                :message="(hasAttemptedSubmit && errors.password) || []"
                 :type="
                   hasAttemptedSubmit && errors.password
                     ? 'is-danger'
-                    : 'is-info'
+                    : undefined
                 "
               >
                 <b-input
@@ -40,11 +40,11 @@
               </b-field>
               <b-field
                 label="Confirm Password"
-                :message="hasAttemptedSubmit && errors.passwordConfirm"
+                :message="(hasAttemptedSubmit && errors.passwordConfirm) || []"
                 :type="
                   hasAttemptedSubmit && errors.passwordConfirm
                     ? 'is-danger'
-                    : 'is-info'
+                    : undefined
                 "
               >
                 <b-input
@@ -55,7 +55,7 @@
               </b-field>
               <b-field>
                 <p class="control">
-                  <b-button class="button is-indian-red" @click="doSubmit"
+                  <b-button class="button is-info" @click="doSubmit"
                     >Sign up</b-button
                   >
                 </p>
@@ -138,6 +138,10 @@ export default Vue.extend({
   width: 100vw;
   height: 100vh;
   padding-top: 0rem;
+  .card-header-title {
+    padding: 1.5rem;
+    border-bottom: 2px solid $info;
+  }
   @include desktop {
     padding-top: 4rem;
   }

@@ -14,7 +14,6 @@ AWS.config.update({
 })
 
 export const doUpload = (file: File): Promise<ManagedUpload.SendData> => {
-  console.log('here') //eslint-disable-line
   const upload = new AWS.S3.ManagedUpload({
     params: {
       Bucket: bucketName,

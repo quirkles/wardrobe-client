@@ -4,7 +4,7 @@
       <div class="column is-one-third-desktop">
         <div class="card mt-4">
           <header class="card-header">
-            <p class="card-header-title">Log in</p>
+            <h1 class="card-header-title is-size-3 has-text-danger">Login</h1>
           </header>
           <div class="card-content">
             <div class="content">
@@ -39,7 +39,7 @@
               </b-field>
               <b-field>
                 <p class="control">
-                  <b-button class="button is-indian-red" @click="doSubmit"
+                  <b-button class="button is-danger" @click="doSubmit"
                     >Log in</b-button
                   >
                 </p>
@@ -65,7 +65,6 @@ import { CreateUserInput } from '~/gqlSchemaTypes/globalTypes'
 export default Vue.extend({
   data() {
     return {
-      isShowingNotFoundError: false,
       hasAttemptedSubmit: false,
     }
   },
@@ -78,12 +77,6 @@ export default Vue.extend({
     },
   },
   methods: {
-    flashNotFoundMessage(this: Vue): void {
-      this.$data.isShowingNotFoundError = true
-      setTimeout(() => {
-        this.$data.isShowingNotFoundError = false
-      }, 2000)
-    },
     handleFieldChange(
       this: Vue,
       field: 'email' | 'password' | 'passwordConfirm',
@@ -122,7 +115,7 @@ export default Vue.extend({
           const { redirect = 'home' } = this.$route?.query
           await this.$router.push(redirect as string)
         } else if (__typename === 'UserNotFoundError') {
-          this.flashNotFoundMessage()
+          this.$accessor.unauthenticatedUserCredentials.addKnownNonTakenEmail(email)
         }
       }
     },
@@ -135,6 +128,10 @@ export default Vue.extend({
   width: 100vw;
   height: 100vh;
   padding-top: 0rem;
+  .card-header-title {
+    padding: 1.5rem;
+    border-bottom: 2px solid $danger;
+  }
   @include desktop {
     padding-top: 4rem;
   }

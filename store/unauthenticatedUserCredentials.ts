@@ -15,11 +15,12 @@ export interface UnauthenticatedUserCredentialsState {
   password: string
   passwordConfirm: string
   knownTakenEmails: string[]
+  knownNonTakenEmails: string[]
 }
 
 export type Credentials = Omit<
   UnauthenticatedUserCredentialsState,
-  'knownTakenEmails'
+  'knownTakenEmails' | 'knownNonTakenEmails'
 >
 
 interface UpdateFieldPayload {
@@ -42,10 +43,21 @@ const emailNotTaken = ({ knownTakenEmails, email }: { [field: string]: any }) =>
     ? ['email', 'This email is already taken']
     : null
 
+const emailNotKnownNonTaken = ({
+  knownNonTakenEmails,
+  email,
+}: {
+  [field: string]: any
+}) =>
+  (knownNonTakenEmails || []).includes(email || '')
+    ? ['email', 'This email is not currently in use']
+    : null
+
 const loginValidator = createValidator([
   emailRequired,
   emailIsValid,
   passwordRequired,
+  emailNotKnownNonTaken,
 ])
 
 const signupValidator = createValidator([
@@ -62,7 +74,8 @@ export const state = (): UnauthenticatedUserCredentialsState => ({
   email: '',
   password: '',
   passwordConfirm: '',
-  knownTakenEmails: ['mail@mail.com'],
+  knownTakenEmails: [],
+  knownNonTakenEmails: [],
 })
 
 export const getters = getterTree(state, {
@@ -103,6 +116,12 @@ export const mutations = mutationTree(state, {
     email: string
   ): void {
     Vue.set(state.knownTakenEmails, state.knownTakenEmails.length, email)
+  },
+  addKnownNonTakenEmail(
+    state: UnauthenticatedUserCredentialsState,
+    email: string
+  ): void {
+    Vue.set(state.knownNonTakenEmails, state.knownNonTakenEmails.length, email)
   },
 })
 
